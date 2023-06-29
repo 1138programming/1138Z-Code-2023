@@ -1,50 +1,47 @@
 #include "main.h"
+using namespace pros;
+
+#define MOTOR_TICKS_PER_ROTATION 300
 
 class Base {
-    int backLeftPort;
-    int middleLeftPort;
-    int frontLeftPort;
-    int backRightPort;
-    int middleRightPort;
-    int frontRightPort;
+    Motor_Group* leftMotors;
+    Motor_Group* rightMotors;
     public:
-        Base(int backLeftPort, int middleLeftPort, int frontLeftPort, int backRightPort, int middleRightPort, int frontRightPort) {
-            this->backLeftPort = backLeftPort;
-            this->middleLeftPort = middleLeftPort;
-            this->frontLeftPort = frontLeftPort;
-
-            this->backRightPort = backRightPort;
-            this->middleRightPort = middleRightPort;
-            this->frontRightPort = frontRightPort;
+        Base(Motor_Group* leftMotors, Motor_Group* rightMotors) {
+            this->leftMotors = leftMotors;
+            this->rightMotors = rightMotors;
         }
+        // Base(int backLeftPort, int middleLeftPort, int frontLeftPort, int backRightPort, int middleRightPort, int frontRightPort) {
+        //     this->backLeftPort = backLeftPort;
+        //     this->middleLeftPort = middleLeftPort;
+        //     this->frontLeftPort = frontLeftPort;
 
-        void moveLeftMotors(int movement) {
-            pros::Motor backLeftMotor(backLeftPort);
-            pros::Motor middleLeftMotor(middleLeftPort);
-            pros::Motor frontLeftMotor(frontLeftPort);
-            if (movement > 127) {
-                movement = 127;
+        //     this->backRightPort = backRightPort;
+        //     this->middleRightPort = middleRightPort;
+        //     this->frontRightPort = frontRightPort;
+        // }
+        int analogToRPM(int analog) {
+            return (int)(analog*4.73);
+        }
+        void moveLeftMotors(int movement) {     
+            movement = analogToRPM(movement);    
+            if (movement > 600) {
+                movement = 600;
             }
-            if (movement < -127) {
-                movement = -127;
+            if (movement < -600) {
+                movement = -600;
             }
-            (backLeftMotor).move(movement);
-            (middleLeftMotor).move(movement);
-            (frontLeftMotor).move(movement);
+            (*leftMotors).move(movement);
         }
         void moveRightMotors(int movement) {
-            pros::Motor backRightMotor(backRightPort);
-            pros::Motor middleRightMotor(middleRightPort);
-            pros::Motor frontRightMotor(frontRightPort);
-            if (movement > 127) {
-                movement = 127;
+            movement = analogToRPM(movement);
+            if (movement > 600) {
+                movement = 600;
             }
-            if (movement < -127) {
-                movement = -127;
+            if (movement < -600) {
+                movement = -600;
             }
-            (backRightMotor).move(movement);
-            (middleRightMotor).move(movement);
-            (frontRightMotor).move(movement);
+            (*rightMotors).move(movement);
         }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
             int leftControl = -(leftJoystickYVal + rightJoystickXVal); //speed + turn
@@ -53,6 +50,24 @@ class Base {
             moveLeftMotors(leftControl);
             moveRightMotors(rightControl);
         }
+        double averageArray(vector<double> arr) {
+            int total = 0;
+            // I iterates through the elements in the vector, and the dereferenced value is added to the running total.
+            for (std::vector<double>::iterator i = arr.begin(); i < arr.end(); i++) {
+                total+=*i;
+            }
+            return total/*/size*/;
+        }
+        double convertTicksToRot(double ticks) {
+            return ticks/MOTOR_TICKS_PER_ROTATION;
+        }
+        double getRightRot() {
+            return convertTicksToRot(averageArray(this->leftMotors->get_positions()));
+        }
+        double getLeftRot() {
+            return convertTicksToRot(averageArray(this->rightMotors->get_positions()));
+        }
+};
         // void setBrakeMode(int motorMode) {
         //     //refer to https://pros.cs.purdue.edu/v5/api/c/motors.html#motor-brake-mode-e-t
         //     switch(motorMode) {
@@ -89,4 +104,3 @@ class Base {
         //         break;
         //     }
         // }
-};

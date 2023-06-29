@@ -49,32 +49,7 @@ x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\righ
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
-double absD(double num) {
-  return num < 0 ? -num : num;
-}
-
-double getXPosMultiplierFromDegrees(double gyroDegrees) {
-  double degreesNormalized = absD(fmod(gyroDegrees,360)); //apparently this is how you use the modulo operator????
-  if (degreesNormalized >= 90 && degreesNormalized <= 270) {
-    return -(absD(-(((fmod(gyroDegrees,180))/90)+1)));
-  }
-  else {
-    return (absD(-(((fmod(gyroDegrees,180))/90)+1)));
-  }
-}
-
-double getYPosMultiplierFromDegrees(double gyroDegrees) {
-  double degreesNormalized = absD(fmod(gyroDegrees,360)); //apparently this is how you use the modulo operator????
-  if (degreesNormalized >= 0 && degreesNormalized <= 180) {
-    // If positive in degrees, return the positive value
-    return (absD(((fmod(gyroDegrees,180))/90)-1));
-  }
-  else {
-    return -absD(((fmod(gyroDegrees,180))/90)-1);
-  }
-}
-
-Base robotBase(1,2,3,11,12,13);
+Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}));
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -154,8 +129,19 @@ void autonomous() {
 void opcontrol() {
   // This is preference to what you like to drive on.
   pros::Controller master(CONTROLLER_MASTER);
+  pros::Motor intake(19);
   while (true) {
     robotBase.driveSplitArcade(master.get_analog(ANALOG_RIGHT_X), master.get_analog(ANALOG_LEFT_Y));
+    //Code to get the intake to move on R1 or L1 input.
+    if (master.get_digital(DIGITAL_R1)) {
+      intake.move(127);
+    }
+    else if (master.get_digital(DIGITAL_L1)) {
+      intake.move(-127);
+    }
+    else {
+      intake.move(0);
+    }
     //chassis.tank(); // Tank control    //chassis.arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
