@@ -1,4 +1,5 @@
 #include "main.h"
+#include "PID.cpp"
 using namespace pros;
 
 #define MOTOR_TICKS_PER_ROTATION 300
@@ -6,10 +7,18 @@ using namespace pros;
 class Base {
     Motor_Group* leftMotors;
     Motor_Group* rightMotors;
+    PID* leftMotorController;
+    PID* rightMotorController;
     public:
         Base(Motor_Group* leftMotors, Motor_Group* rightMotors) {
             this->leftMotors = leftMotors;
             this->rightMotors = rightMotors;
+        }
+        Base(Motor_Group* leftMotors, Motor_Group* rightMotors, PID* leftMotorController, PID* rightMotorController) {
+            this->leftMotors = leftMotors;
+            this->rightMotors = rightMotors;
+            this-> leftMotorController = leftMotorController;
+            this-> rightMotorController = rightMotorController;
         }
         // Base(int backLeftPort, int middleLeftPort, int frontLeftPort, int backRightPort, int middleRightPort, int frontRightPort) {
         //     this->backLeftPort = backLeftPort;
