@@ -1,6 +1,7 @@
 #include "main.h"
 #include "Constants.hpp"
 #include "base.cpp"
+#include "MYPID.cpp"
 
 //Base botBase(1,2,3,11,12,13);
 
@@ -49,7 +50,7 @@ x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\righ
 // https://ez-robotics.github.io/EZ-Template/
 /////
 
-Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}));
+Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}), new MYPID(0,2,0.5,2,600,-600,0.5), new MYPID(0,2,0.5,2,600,-600,0.5));
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.

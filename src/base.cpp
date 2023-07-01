@@ -1,5 +1,5 @@
 #include "main.h"
-#include "PID.cpp"
+#include "MYPID.cpp"
 using namespace pros;
 
 #define MOTOR_TICKS_PER_ROTATION 300
@@ -7,14 +7,10 @@ using namespace pros;
 class Base {
     Motor_Group* leftMotors;
     Motor_Group* rightMotors;
-    PID* leftMotorController;
-    PID* rightMotorController;
+    MYPID* leftMotorController;
+    MYPID* rightMotorController;
     public:
-        Base(Motor_Group* leftMotors, Motor_Group* rightMotors) {
-            this->leftMotors = leftMotors;
-            this->rightMotors = rightMotors;
-        }
-        Base(Motor_Group* leftMotors, Motor_Group* rightMotors, PID* leftMotorController, PID* rightMotorController) {
+        Base(Motor_Group* leftMotors, Motor_Group* rightMotors, MYPID* leftMotorController, MYPID* rightMotorController) {
             this->leftMotors = leftMotors;
             this->rightMotors = rightMotors;
             this-> leftMotorController = leftMotorController;
@@ -52,13 +48,6 @@ class Base {
             }
             (*rightMotors).move(movement);
         }
-        void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
-            int leftControl = -(leftJoystickYVal + rightJoystickXVal); //speed + turn
-            int rightControl = -(leftJoystickYVal - rightJoystickXVal); // speed - turn
-
-            moveLeftMotors(leftControl);
-            moveRightMotors(rightControl);
-        }
         double averageArray(vector<double> arr) {
             int total = 0;
             // I iterates through the elements in the vector, and the dereferenced value is added to the running total.
@@ -75,6 +64,15 @@ class Base {
         }
         double getLeftRot() {
             return convertTicksToRot(averageArray(this->rightMotors->get_positions()));
+        }
+        void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
+            int leftControl = -(leftJoystickYVal + rightJoystickXVal); //speed + turn
+            int rightControl = -(leftJoystickYVal - rightJoystickXVal); // speed - turn
+            this->leftMotorController->setSetpoint(leftControl);
+            this->rightMotorController->setSetpoint(rightControl);
+
+            moveLeftMotors(this->leftMotorController->calculate(averageArray(this->leftMotors->get_actual_velocities())));
+            moveRightMotors(this->rightMotorController->calculate(averageArray(this->rightMotors->get_actual_velocities())));
         }
 };
         // void setBrakeMode(int motorMode) {
