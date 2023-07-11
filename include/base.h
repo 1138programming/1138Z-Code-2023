@@ -1,92 +1,110 @@
+#ifndef BASE_H
+#define BASE_H
+
 #include "main.h"
+#include "MYPID.h"
+
+#define MOTOR_TICKS_PER_ROTATION 300
+
+using namespace pros;
 
 class Base {
-    pros::Motor* backLeftMotor;
-    pros::Motor* middleLeftMotor;
-    pros::Motor* frontLeftMotor;
-    pros::Motor* backRightMotor;
-    pros::Motor* middleRightMotor;
-    pros::Motor* frontRightMotor;
-    pros::Controller* controller;
+    Motor_Group* leftMotors;
+    Motor_Group* rightMotors;
+    PID* leftMotorController;
+    PID* rightMotorController;
+    float wheelDiam;
     public:
-        void setController(pros::Controller* controller) {
-            this->controller = controller;
+        Base(Motor_Group* leftMotors, Motor_Group* rightMotors, PID* leftMotorController, PID* rightMotorController, float wheelDiam) {
+            this->leftMotors = leftMotors;
+            this->rightMotors = rightMotors;
+            this-> leftMotorController = leftMotorController;
+            this-> rightMotorController = rightMotorController;
+            this->wheelDiam = wheelDiam;
         }
-        Base(int backLeftPort, int middleLeftPort, int frontLeftPort, int backRightPort, int middleRightPort, int frontRightPort) {
-            this->backLeftMotor = new pros::Motor(backLeftPort);
-            this->middleLeftMotor = new pros::Motor(middleLeftPort);
-            this->frontLeftMotor = new pros::Motor(frontLeftPort);
+        // Base(int backLeftPort, int middleLeftPort, int frontLeftPort, int backRightPort, int middleRightPort, int frontRightPort) {
+        //     this->backLeftPort = backLeftPort;
+        //     this->middleLeftPort = middleLeftPort;
+        //     this->frontLeftPort = frontLeftPort;
 
-            this->backRightMotor = new pros::Motor(backRightPort);
-            this->middleRightMotor = new pros::Motor(middleRightPort);
-            this->middleRightMotor = new pros::Motor(frontRightPort);
+        //     this->backRightPort = backRightPort;
+        //     this->middleRightPort = middleRightPort;
+        //     this->frontRightPort = frontRightPort;
+        // }
+        int analogToRPM(int analog) {
+            return (int)(analog*4.73);
         }
-
-        void moveLeftMotors(int movement) {
-            if (movement > 127) {
-                movement = 127;
+        void moveLeftMotors(int movement) {     
+            movement = analogToRPM(movement);    
+            if (movement > 600) {
+                movement = 600;
             }
-            if (movement < -127) {
-                movement = -127;
+            if (movement < -600) {
+                movement = -600;
             }
-            (*backLeftMotor).move(movement);
-            (*middleLeftMotor).move(movement);
-            (*frontLeftMotor).move(movement);
+            (*leftMotors).move(movement);
         }
         void moveRightMotors(int movement) {
-            if (movement > 127) {
-                movement = 127;
+            movement = analogToRPM(movement);
+            if (movement > 600) {
+                movement = 600;
             }
-            if (movement < -127) {
-                movement = -127;
+            if (movement < -600) {
+                movement = -600;
             }
-            (*backRightMotor).move(movement);
-            (*middleRightMotor).move(movement);
-            (*frontRightMotor).move(movement);
+            (*rightMotors).move(movement);
         }
-        void driveSplitArcade() {
-            int leftJoystickYVal = this->controller->get_analog(ANALOG_LEFT_Y);
-            int rightJoystickXVal = this->controller->get_analog(ANALOG_RIGHT_X);
-
-            int leftControl = (leftJoystickYVal + rightJoystickXVal);
-            int rightControl = (leftJoystickYVal - rightJoystickXVal);
-
-            moveLeftMotors(leftControl);
-            moveRightMotors(rightControl);
+        double averageArray(vector<double> arr) {
+            int total = 0;
+            // "i" iterates through the elements in the vector, and the dereferenced value is added to the running total.
+            for (std::vector<double>::iterator i = arr.begin(); i < arr.end(); i++) {
+                total+=*i;
+            }
+            return total/arr.size();/*/size*/
         }
-        void setBrakeMode(int motorMode) {
+        double convertTicksToRot(double ticks) {
+            return ticks/MOTOR_TICKS_PER_ROTATION;
+        }
+        double getRightRot() {
+            return convertTicksToRot(averageArray(this->leftMotors->get_positions()));
+        }
+        double getLeftRot() {
+            return convertTicksToRot(averageArray(this->rightMotors->get_positions()));
+        }
+        void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
+            int leftControl = -(leftJoystickYVal + rightJoystickXVal); //speed + turn
+            int rightControl = -(leftJoystickYVal - rightJoystickXVal); // speed - turn
+            this->leftMotorController->setSetpoint(leftControl);
+            this->rightMotorController->setSetpoint(rightControl);
+
+            moveLeftMotors(this->leftMotorController->calculate(averageArray(this->leftMotors->get_actual_velocities())));
+            moveRightMotors(this->rightMotorController->calculate(averageArray(this->rightMotors->get_actual_velocities())));
+        }
+        void setBrakeMode(pros::motor_brake_mode_e motorMode) {
             //refer to https://pros.cs.purdue.edu/v5/api/c/motors.html#motor-brake-mode-e-t
+            E_MOTOR_BRAKE_BRAKE;
             switch(motorMode) {
-                case 0: //coast - motor coasts when stopped
-                    (*backLeftMotor).set_brake_mode(MOTOR_BRAKE_COAST);
-                    (*middleLeftMotor).set_brake_mode(MOTOR_BRAKE_COAST);
-                    (*frontLeftMotor).set_brake_mode(MOTOR_BRAKE_COAST);
+                case MOTOR_BRAKE_COAST: //coast - motor coasts when stopped
+                    this->leftMotors->set_brake_modes(MOTOR_BRAKE_COAST);
                     
-                    (*backRightMotor).set_brake_mode(MOTOR_BRAKE_COAST);
-                    (*middleRightMotor).set_brake_mode(MOTOR_BRAKE_COAST);
-                    (*frontRightMotor).set_brake_mode(MOTOR_BRAKE_COAST);
+                    this->rightMotors->set_brake_modes(MOTOR_BRAKE_COAST);
                 break;
-                case 1: //brake - motor breaks when stopped (passive holding pos)
-                    (*backLeftMotor).set_brake_mode(MOTOR_BRAKE_BRAKE);
-                    (*middleLeftMotor).set_brake_mode(MOTOR_BRAKE_BRAKE);
-                    (*frontLeftMotor).set_brake_mode(MOTOR_BRAKE_BRAKE);
-                    
-                    (*backRightMotor).set_brake_mode(MOTOR_BRAKE_BRAKE);
-                    (*middleRightMotor).set_brake_mode(MOTOR_BRAKE_BRAKE);
-                    (*frontRightMotor).set_brake_mode(MOTOR_BRAKE_BRAKE);
+                case MOTOR_BRAKE_BRAKE: //brake - motor breaks when stopped (passive holding pos)
+                    this->leftMotors->set_brake_modes(MOTOR_BRAKE_BRAKE);
+
+                    this->rightMotors->set_brake_modes(MOTOR_BRAKE_BRAKE);
                 break;
-                case 2: //hold - motor actively holds position when stopped
-                    (*backLeftMotor).set_brake_mode(MOTOR_BRAKE_HOLD);
-                    (*middleLeftMotor).set_brake_mode(MOTOR_BRAKE_HOLD);
-                    (*frontLeftMotor).set_brake_mode(MOTOR_BRAKE_HOLD);
-                    
-                    (*backRightMotor).set_brake_mode(MOTOR_BRAKE_HOLD);
-                    (*middleRightMotor).set_brake_mode(MOTOR_BRAKE_HOLD);
-                    (*frontRightMotor).set_brake_mode(MOTOR_BRAKE_HOLD);
+                case MOTOR_BRAKE_HOLD: //hold - motor actively holds position when stopped
+                    this->leftMotors->set_brake_modes(MOTOR_BRAKE_HOLD);
+
+                    this->rightMotors->set_brake_modes(MOTOR_BRAKE_HOLD);
                 break;
                 case INT32_MAX: //invalid, will not change motors
                 break;
                 default: //will also not change motors
+                break;
             }
         }
 };
+
+#endif

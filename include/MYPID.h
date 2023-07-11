@@ -1,3 +1,6 @@
+#ifndef MYPID_H
+#define MYPID_H
+
 #include "main.h"
 
 class MYPID {
@@ -37,7 +40,7 @@ class MYPID {
       this->lastMillis = pros::millis();
     }
 
-    double setSetpoint(double setpoint) {
+    void setSetpoint(double setpoint) {
       this->setpoint = setpoint;
     }
 
@@ -71,3 +74,5 @@ class MYPID {
       return output;
     }
 };
+
+#endif

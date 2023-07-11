@@ -1,5 +1,5 @@
-#ifndef Constants.hpp
-#define Constants.hpp
+#ifndef Constants_HPP
+#define Constants_HPP
 #endif
 
 #include <functional>
