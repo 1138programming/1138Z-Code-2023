@@ -15,3 +15,6 @@ const int kRightDrivebaseFrontPort = 0;
 
 const double kRotationAllowedError = 0.001;
 const double kMovementAllowedError = 0.001;
+
+const int kIntakePort = 18;
+const int kIntakeSpeed = 127;

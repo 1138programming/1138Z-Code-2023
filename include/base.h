@@ -11,11 +11,11 @@ using namespace pros;
 class Base {
     Motor_Group* leftMotors;
     Motor_Group* rightMotors;
-    PID* leftMotorController;
-    PID* rightMotorController;
+    MYPID* leftMotorController;
+    MYPID* rightMotorController;
     float wheelDiam;
     public:
-        Base(Motor_Group* leftMotors, Motor_Group* rightMotors, PID* leftMotorController, PID* rightMotorController, float wheelDiam) {
+        Base(Motor_Group* leftMotors, Motor_Group* rightMotors, MYPID* leftMotorController, MYPID* rightMotorController, float wheelDiam) {
             this->leftMotors = leftMotors;
             this->rightMotors = rightMotors;
             this-> leftMotorController = leftMotorController;
@@ -74,11 +74,14 @@ class Base {
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
             int leftControl = -(leftJoystickYVal + rightJoystickXVal); //speed + turn
             int rightControl = -(leftJoystickYVal - rightJoystickXVal); // speed - turn
-            this->leftMotorController->setSetpoint(leftControl);
-            this->rightMotorController->setSetpoint(rightControl);
+            // this->leftMotorController->setSetpoint(leftControl);
+            // this->rightMotorController->setSetpoint(rightControl);
 
-            moveLeftMotors(this->leftMotorController->calculate(averageArray(this->leftMotors->get_actual_velocities())));
-            moveRightMotors(this->rightMotorController->calculate(averageArray(this->rightMotors->get_actual_velocities())));
+            // moveLeftMotors(this->leftMotorController->calculate(averageArray(this->leftMotors->get_actual_velocities())));
+            // moveRightMotors(this->rightMotorController->calculate(averageArray(this->rightMotors->get_actual_velocities())));
+
+            moveLeftMotors((int)leftControl * 0.8);
+            moveRightMotors((int)rightControl * 0.8);
         }
         void setBrakeMode(pros::motor_brake_mode_e motorMode) {
             //refer to https://pros.cs.purdue.edu/v5/api/c/motors.html#motor-brake-mode-e-t

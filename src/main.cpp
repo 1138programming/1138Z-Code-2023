@@ -2,6 +2,7 @@
 #include "Constants.hpp"
 #include "Base.h"
 #include "MYPID.h"
+#include "intake.h"
 
 //Base botBase(1,2,3,11,12,13);
 
@@ -50,7 +51,7 @@ x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\righ
 // https://ez-robotics.github.io/EZ-Template/
 /////
 Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}), new MYPID(0,2,0.5,2,600,-600,0.5), new MYPID(0,2,0.5,2,600,-600,0.5), 4.125);
-
+Intake intake(new Motor(kIntakePort));
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -127,21 +128,23 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+  bool R1LastPressed = false;
   // This is preference to what you like to drive on.
   pros::Controller master(CONTROLLER_MASTER);
-  pros::Motor intake(19);
   while (true) {
     robotBase.driveSplitArcade(master.get_analog(ANALOG_RIGHT_X), master.get_analog(ANALOG_LEFT_Y));
     //Code to get the intake to move on R1 or L1 input.
+
     if (master.get_digital(DIGITAL_R1)) {
-      intake.move(127);
-    }
-    else if (master.get_digital(DIGITAL_L1)) {
-      intake.move(-127);
+      if (!R1LastPressed) {
+        intake.toggleDirection();
+      }
+      R1LastPressed = true;
     }
     else {
-      intake.move(0);
+      R1LastPressed = false;
     }
+    intake.move(kIntakeSpeed);
     //chassis.tank(); // Tank control    //chassis.arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
