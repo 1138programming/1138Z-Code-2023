@@ -129,6 +129,7 @@ void autonomous() {
  */
 void opcontrol() {
   bool R1LastPressed = false;
+  bool L1LastPressed = false;
   // This is preference to what you like to drive on.
   pros::Controller master(CONTROLLER_MASTER);
   while (true) {
@@ -145,6 +146,16 @@ void opcontrol() {
       R1LastPressed = false;
     }
     intake.move(kIntakeSpeed);
+
+    if (master.get_digital(DIGITAL_L1)) {
+      if(!L1LastPressed) {
+        intake.toggleDisable();
+      }
+      L1LastPressed = true;
+    }
+    else {
+      L1LastPressed = false;
+    }
     //chassis.tank(); // Tank control    //chassis.arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
