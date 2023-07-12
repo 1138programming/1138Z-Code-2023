@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "MYPID.h"
+#include "Constants.hpp"
 
 #define MOTOR_TICKS_PER_ROTATION 300
 
@@ -72,6 +73,7 @@ class Base {
             return convertTicksToRot(averageArray(this->rightMotors->get_positions()));
         }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
+            rightJoystickXVal = rightJoystickXVal * kTurningMovementMultiplier;
             int leftControl = -(leftJoystickYVal + rightJoystickXVal); //speed + turn
             int rightControl = -(leftJoystickYVal - rightJoystickXVal); // speed - turn
             // this->leftMotorController->setSetpoint(leftControl);
@@ -80,8 +82,8 @@ class Base {
             // moveLeftMotors(this->leftMotorController->calculate(averageArray(this->leftMotors->get_actual_velocities())));
             // moveRightMotors(this->rightMotorController->calculate(averageArray(this->rightMotors->get_actual_velocities())));
 
-            moveLeftMotors((int)leftControl * 0.8);
-            moveRightMotors((int)rightControl * 0.8);
+            moveLeftMotors((int)leftControl * kMovementSpeedMultiplier);
+            moveRightMotors((int)rightControl * kMovementSpeedMultiplier);
         }
         void setBrakeMode(pros::motor_brake_mode_e motorMode) {
             //refer to https://pros.cs.purdue.edu/v5/api/c/motors.html#motor-brake-mode-e-t
