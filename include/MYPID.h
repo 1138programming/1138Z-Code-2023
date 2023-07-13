@@ -21,7 +21,7 @@ class MYPID {
     double bias = 0;
     double allowedError = 0.001;
 
-    std::uint32_t iterationTime = 0; // PLEASE change this to use UNIX time on the actual bot code, I'm just doing this to write it rn.
+    std::uint32_t iterationTime = 0;
     std::uint32_t lastMillis = 1;
 
     double abs(double num) {
