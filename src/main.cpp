@@ -3,6 +3,7 @@
 #include "Base.h"
 #include "MYPID.h"
 #include "intake.h"
+#include "shuffleboard.hpp"
 
 //Base botBase(1,2,3,11,12,13);
 
