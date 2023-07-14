@@ -43,6 +43,6 @@ class Shuffleboard {
         void pushString() {
 
         }
-}
+};
 
 #endif
