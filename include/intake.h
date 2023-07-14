@@ -13,6 +13,7 @@ class Intake {
         }
         void move(int speed) {
             if (this->disabled) {
+                this->intakeMotor->move(0);
                 return;
             }
             speed = speed > 127 ? 127 : speed; //make sure we're not trying to move over 127 (maximum)
