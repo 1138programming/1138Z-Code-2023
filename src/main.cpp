@@ -50,8 +50,8 @@ x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\righ
 // For instalattion, upgrading, documentations and tutorials, check out website!
 // https://ez-robotics.github.io/EZ-Template/
 /////
-Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}), new MYPID(0,2,0.5,2,600,-600,0.5), new MYPID(0,2,0.5,2,600,-600,0.5), 4.125);
-Intake intake(new Motor(kIntakePort));
+// Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}), new MYPID(0,2,0.5,2,600,-600,0.5), new MYPID(0,2,0.5,2,600,-600,0.5), 4.125);
+// Intake intake(new Motor(kIntakePort));
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -59,6 +59,7 @@ Intake intake(new Motor(kIntakePort));
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  pros::screen::set_pen(COLOR_BISQUE);
   // Print our branding over your terminal :D
 
   // Initialize chassis and auton selector
@@ -132,30 +133,38 @@ void opcontrol() {
   bool L1LastPressed = false;
   // This is preference to what you like to drive on.
   pros::Controller master(CONTROLLER_MASTER);
+  pros::ADIUltrasonic ultrasonic('C','D');
   while (true) {
-    robotBase.driveSplitArcade(master.get_analog(ANALOG_RIGHT_X), master.get_analog(ANALOG_LEFT_Y));
+    //robotBase.driveSplitArcade(master.get_analog(ANALOG_RIGHT_X), master.get_analog(ANALOG_LEFT_Y));
     //Code to get the intake to move on R1 or L1 input.
+    float a = ultrasonic.get_value();
+    // a /= 100;
+    // a*= 35.7142857143;
+    // a*= 0.0909090909;
+    //a*=0.0324675324642987;
+    a*=0.0328084;
+    pros::screen::print(TEXT_MEDIUM, 3, "Ft.: %g", a);
 
-    if (master.get_digital(DIGITAL_R1)) {
-      if (!R1LastPressed) {
-        intake.toggleDirection();
-      }
-      R1LastPressed = true;
-    }
-    else {
-      R1LastPressed = false;
-    }
-    intake.move(kIntakeSpeed);
+    // if (master.get_digital(DIGITAL_R1)) {
+    //   if (!R1LastPressed) {
+    //     intake.toggleDirection();
+    //   }
+    //   R1LastPressed = true;
+    // }
+    // else {
+    //   R1LastPressed = false;
+    // }
+    // intake.move(kIntakeSpeed);
 
-    if (master.get_digital(DIGITAL_L1)) {
-      if(!L1LastPressed) {
-        intake.toggleDisable();
-      }
-      L1LastPressed = true;
-    }
-    else {
-      L1LastPressed = false;
-    }
+    // if (master.get_digital(DIGITAL_L1)) {
+    //   if(!L1LastPressed) {
+    //     intake.toggleDisable();
+    //   }
+    //   L1LastPressed = true;
+    // }
+    // else {
+    //   L1LastPressed = false;
+    // }
     //chassis.tank(); // Tank control    //chassis.arcade_standard(ez::SPLIT); // Standard split arcade
     // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
     // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
