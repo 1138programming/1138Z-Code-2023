@@ -67,22 +67,22 @@ lv_obj_t * myLabel;
 lv_style_t myButtonStyleREL; //relesed style
 lv_style_t myButtonStylePR; //pressed style
 
+int i = 0;
+
 static lv_res_t btn_click_action(lv_obj_t * btn)
 {
-    uint8_t id = lv_obj_get_free_num(btn); //id usefull when there are multiple buttons
+    char buffer[100];
+    i++;
 
-    if(id == 0)
-    {
-        char buffer[100];
-		sprintf(buffer, "button was clicked %i milliseconds from start", pros::millis());
-		lv_label_set_text(myLabel, buffer);
-    }
+    sprintf(buffer, "%i",i);
+    lv_label_set_text(myLabel,buffer);
+    uint8_t id = lv_obj_get_free_num(btn); //id usefull when there are multiple buttons
 
     return LV_RES_OK;
 }
 
 void initialize() {
-      lv_style_copy(&myButtonStyleREL, &lv_style_plain);
+    lv_style_copy(&myButtonStyleREL, &lv_style_plain);
     myButtonStyleREL.body.main_color = LV_COLOR_MAKE(150, 0, 0);
     myButtonStyleREL.body.grad_color = LV_COLOR_MAKE(0, 0, 150);
     myButtonStyleREL.body.radius = 0;
