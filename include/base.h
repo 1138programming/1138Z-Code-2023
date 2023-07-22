@@ -55,6 +55,10 @@ class Base {
             }
             (*rightMotors).move(movement);
         }
+        void driveStraight(int movement) {
+            moveRightMotors(movement);
+            moveLeftMotors(movement);
+        }
         double averageArray(vector<double> arr) {
             int total = 0;
             // "i" iterates through the elements in the vector, and the dereferenced value is added to the running total.

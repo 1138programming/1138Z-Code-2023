@@ -24,4 +24,9 @@ const float kMovementSpeedMultiplier = 0.8;
 
 const double kRotationAllowedError = 0.001;
 const double kMovementAllowedError = 0.001;
+
+
+//Catapult
+const int kCatapultPort = 7;
+const float kCatapultSpeedMultiplier = 1;
 #endif

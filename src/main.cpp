@@ -1,7 +1,9 @@
 #include "main.h"
 #include "Constants.hpp"
+#include "catapult.hpp"
 #include "Base.h"
 #include "MYPID.h"
+#include "auton.hpp"
 #include "intake.h"
 
 //Base botBase(1,2,3,11,12,13);
@@ -52,6 +54,8 @@ x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\righ
 /////
 Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}), new MYPID(0,2,0.5,2,600,-600,0.5), new MYPID(0,2,0.5,2,600,-600,0.5), 4.125);
 Intake intake(new Motor(kIntakePort));
+Catapult catapult(new Motor(kCatapultPort));
+Autons autons(&robotBase);
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -105,6 +109,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
+  autons.driveForwardForSpecifiedTime(4.0);
   // chassis.reset_pid_targets(); // Resets PID targets to 0
   // chassis.reset_gyro(); // Reset gyro position to 0
   // chassis.reset_drive_sensor(); // Reset drive sensors to 0
@@ -150,6 +155,17 @@ void opcontrol() {
       R1LastPressed = false;
     }
     intake.move(kIntakeSpeed);
+
+
+
+    if (master.get_digital(DIGITAL_R2)) {
+      catapult.move();
+    }
+    else {
+      catapult.stopMoving();
+    }
+
+
 
     if (master.get_digital(DIGITAL_L1)) {
       if(!L1LastPressed) {
