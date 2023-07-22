@@ -21,8 +21,8 @@ class Autons {
 
             while(pros::millis()/1000 - initialTime < seconds) {
                 //wait
-                this->base->moveLeftMotors(-100);
-                this->base->moveRightMotors(100);
+                this->base->moveLeftMotors(-75);
+                this->base->moveRightMotors(75);
                 pros::delay(10);
             }
             this->base->driveStraight(0);

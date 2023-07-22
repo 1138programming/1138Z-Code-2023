@@ -43,7 +43,7 @@ class Base {
             if (movement < -600) {
                 movement = -600;
             }
-            (*leftMotors).move(movement);
+            (*leftMotors).move_velocity(movement);
         }
         void moveRightMotors(int movement) {
             movement = analogToRPM(movement);
@@ -53,7 +53,7 @@ class Base {
             if (movement < -600) {
                 movement = -600;
             }
-            (*rightMotors).move(movement);
+            (*rightMotors).move_velocity(movement);
         }
         void driveStraight(int movement) {
             moveRightMotors(movement);

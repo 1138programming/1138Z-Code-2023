@@ -109,7 +109,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-  autons.driveForwardForSpecifiedTime(4.0);
+  autons.driveForwardForSpecifiedTime(2.0);
   // chassis.reset_pid_targets(); // Resets PID targets to 0
   // chassis.reset_gyro(); // Reset gyro position to 0
   // chassis.reset_drive_sensor(); // Reset drive sensors to 0
