@@ -18,9 +18,9 @@ const int kIntakeSpeed = 127;
 
 //Base
 //How fast we turn vs. max speed
-const float kTurningMovementMultiplier = 0.8;
+const float kTurningMovementMultiplier = 0.9;
 // How fast of max speed we actually move
-const float kMovementSpeedMultiplier = 0.8;
+const float kMovementSpeedMultiplier = 1.0;
 
 const double kRotationAllowedError = 0.001;
 const double kMovementAllowedError = 0.001;

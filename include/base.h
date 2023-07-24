@@ -35,7 +35,7 @@ class Base {
         int analogToRPM(int analog) {
             return (int)(analog*4.73);
         }
-        void moveLeftMotors(int movement) {     
+        void moveLeftMotorsWithConversion(int movement) {     
             movement = analogToRPM(movement);    
             if (movement > 600) {
                 movement = 600;
@@ -45,7 +45,7 @@ class Base {
             }
             (*leftMotors).move_velocity(movement);
         }
-        void moveRightMotors(int movement) {
+        void moveRightMotorsWithConversion(int movement) {
             movement = analogToRPM(movement);
             if (movement > 600) {
                 movement = 600;
@@ -56,8 +56,8 @@ class Base {
             (*rightMotors).move_velocity(movement);
         }
         void driveStraight(int movement) {
-            moveRightMotors(movement);
-            moveLeftMotors(movement);
+            moveRightMotorsWithConversion(movement);
+            moveLeftMotorsWithConversion(movement);
         }
         double averageArray(vector<double> arr) {
             int total = 0;
@@ -77,17 +77,17 @@ class Base {
             return convertTicksToRot(averageArray(this->rightMotors->get_positions()));
         }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
-            rightJoystickXVal = rightJoystickXVal * kTurningMovementMultiplier;
-            int leftControl = -(leftJoystickYVal + rightJoystickXVal); //speed + turn
-            int rightControl = -(leftJoystickYVal - rightJoystickXVal); // speed - turn
+            leftJoystickYVal = leftJoystickYVal * kTurningMovementMultiplier;
+            int leftControl = (rightJoystickXVal + leftJoystickYVal); //speed + turn
+            int rightControl = (rightJoystickXVal - leftJoystickYVal); // speed - turn
             // this->leftMotorController->setSetpoint(leftControl);
             // this->rightMotorController->setSetpoint(rightControl);
 
             // moveLeftMotors(this->leftMotorController->calculate(averageArray(this->leftMotors->get_actual_velocities())));
             // moveRightMotors(this->rightMotorController->calculate(averageArray(this->rightMotors->get_actual_velocities())));
 
-            moveLeftMotors((int)leftControl * kMovementSpeedMultiplier);
-            moveRightMotors((int)rightControl * kMovementSpeedMultiplier);
+            moveLeftMotorsWithConversion((int)leftControl * kMovementSpeedMultiplier);
+            moveRightMotorsWithConversion((int)rightControl * kMovementSpeedMultiplier);
         }
         void setBrakeMode(pros::motor_brake_mode_e motorMode) {
             //refer to https://pros.cs.purdue.edu/v5/api/c/motors.html#motor-brake-mode-e-t
