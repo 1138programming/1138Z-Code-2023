@@ -43,9 +43,9 @@ struct Pos
 
 
 /*
-y mult = \operatorname{abs}\left(\left(\frac{\operatorname{mod}\left(x,180\right)}{90}\right)-1\right)
+y mult = \operatorname{abs}\left(\left(\frac{\operatorname{mod}\left(x,180\right)}{90}\right)-1\right);
 
-x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\right)}{90}\right)+1\right)
+x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\right)}{90}\right)+1\right);
 */
 
 /////
