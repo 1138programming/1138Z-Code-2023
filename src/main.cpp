@@ -1,5 +1,6 @@
 #include "main.h"
 #include "Constants.hpp"
+#include "shuffleboard.hpp"
 #include "Base.h"
 #include "MYPID.h"
 #include "intake.h"
@@ -53,6 +54,7 @@ x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\righ
 /////
 Base robotBase(new Motor_Group({1,2,3}), new Motor_Group({11,12,13}), new MYPID(0,2,0.5,2,600,-600,0.5), new MYPID(0,2,0.5,2,600,-600,0.5), 4.125);
 Intake intake(new Motor(kIntakePort));
+Shuffleboard shuffleboardClone;
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -60,54 +62,10 @@ Intake intake(new Motor(kIntakePort));
  * to keep execution time for this mode under a few seconds.
  */
 
-lv_obj_t * myButton;
-lv_obj_t * myButtonLabel;
-lv_obj_t * myLabel;
-
-lv_style_t myButtonStyleREL; //relesed style
-lv_style_t myButtonStylePR; //pressed style
-
 int i = 0;
 
-static lv_res_t btn_click_action(lv_obj_t * btn)
-{
-    char buffer[100];
-    i++;
-
-    sprintf(buffer, "%i",i);
-    lv_label_set_text(myLabel,buffer);
-    uint8_t id = lv_obj_get_free_num(btn); //id usefull when there are multiple buttons
-
-    return LV_RES_OK;
-}
-
 void initialize() {
-    lv_style_copy(&myButtonStyleREL, &lv_style_plain);
-    myButtonStyleREL.body.main_color = LV_COLOR_MAKE(150, 0, 0);
-    myButtonStyleREL.body.grad_color = LV_COLOR_MAKE(0, 0, 150);
-    myButtonStyleREL.body.radius = 0;
-    myButtonStyleREL.text.color = LV_COLOR_MAKE(255, 255, 255);
-
-    lv_style_copy(&myButtonStylePR, &lv_style_plain);
-    myButtonStylePR.body.main_color = LV_COLOR_MAKE(255, 0, 0);
-    myButtonStylePR.body.grad_color = LV_COLOR_MAKE(0, 0, 255);
-    myButtonStylePR.body.radius = 0;
-    myButtonStylePR.text.color = LV_COLOR_MAKE(255, 255, 255);
-
-    myButton = lv_btn_create(lv_scr_act(), NULL); //create button, lv_scr_act() is deafult screen object
-    lv_obj_set_free_num(myButton, 0); //set button is to 0
-    lv_btn_set_action(myButton, LV_BTN_ACTION_CLICK, btn_click_action); //set function to be called on button click
-    lv_btn_set_style(myButton, LV_BTN_STYLE_REL, &myButtonStyleREL); //set the relesed style
-    lv_btn_set_style(myButton, LV_BTN_STYLE_PR, &myButtonStylePR); //set the pressed style
-    lv_obj_set_size(myButton, 200, 50); //set the button size
-    lv_obj_align(myButton, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10); //set the position to top mid
-
-    myButtonLabel = lv_label_create(myButton, NULL); //create label and puts it inside of the button
-    lv_label_set_text(myButtonLabel, "Click the Button"); //sets label text
-
-    myLabel = lv_label_create(lv_scr_act(), NULL); //create label and puts it on the screen
-    lv_label_set_text(myLabel, "Button has not been clicked yet"); //sets label text
-    lv_obj_align(myLabel, NULL, LV_LABEL_ALIGN_CENTER, 10, 0); //set the position to center
+  shuffleboardClone.pushInt(&i,"randomTest");
   // Print our branding over your terminal :D
 
   // Initialize chassis and auton selector
@@ -177,42 +135,45 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-  // bool R1LastPressed = false;
-  // bool L1LastPressed = false;
-  // // This is preference to what you like to drive on.
-  // pros::Controller master(CONTROLLER_MASTER);
-  // while (true) {
-  //   robotBase.driveSplitArcade(master.get_analog(ANALOG_RIGHT_X), master.get_analog(ANALOG_LEFT_Y));
-  //   //Code to get the intake to move on R1 or L1 input.
+  bool R1LastPressed = false;
+  bool L1LastPressed = false;
+  // This is preference to what you like to drive on.
+  pros::Controller master(CONTROLLER_MASTER);
+  while (true) {
+    shuffleboardClone.clear();
+    shuffleboardClone.draw();
+    i++;
+    robotBase.driveSplitArcade(master.get_analog(ANALOG_RIGHT_X), master.get_analog(ANALOG_LEFT_Y));
+    //Code to get the intake to move on R1 or L1 input.
 
-  //   if (master.get_digital(DIGITAL_R1)) {
-  //     if (!R1LastPressed) {
-  //       intake.toggleDirection();
-  //     }
-  //     R1LastPressed = true;
-  //   }
-  //   else {
-  //     R1LastPressed = false;
-  //   }
-  //   intake.move(kIntakeSpeed);
+    if (master.get_digital(DIGITAL_R1)) {
+      if (!R1LastPressed) {
+        intake.toggleDirection();
+      }
+      R1LastPressed = true;
+    }
+    else {
+      R1LastPressed = false;
+    }
+    intake.move(kIntakeSpeed);
 
-  //   if (master.get_digital(DIGITAL_L1)) {
-  //     if(!L1LastPressed) {
-  //       intake.toggleDisable();
-  //     }
-  //     L1LastPressed = true;
-  //   }
-  //   else {
-  //     L1LastPressed = false;
-  //   }
-  //   //chassis.tank(); // Tank control    //chassis.arcade_standard(ez::SPLIT); // Standard split arcade
-  //   // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
-  //   // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
-  //   // chassis.arcade_flipped(ez::SINGLE); // Flipped single arcade
-  //   // . . .
-  //   // Put more user control code here!
-  //   // . . .
+    if (master.get_digital(DIGITAL_L1)) {
+      if(!L1LastPressed) {
+        intake.toggleDisable();
+      }
+      L1LastPressed = true;
+    }
+    else {
+      L1LastPressed = false;
+    }
+    //chassis.tank(); // Tank control    //chassis.arcade_standard(ez::SPLIT); // Standard split arcade
+    // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
+    // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
+    // chassis.arcade_flipped(ez::SINGLE); // Flipped single arcade
+    // . . .
+    // Put more user control code here!
+    // . . .
 
-  //   pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
-  // }
+    pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+  }
 }

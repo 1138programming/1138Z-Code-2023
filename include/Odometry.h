@@ -2,7 +2,7 @@
 #define ODOMETRY_H
 
 #include "main.h"
-#include "Base.h"
+#include "base.h"
 
 #define PI 3.14159265358979323846
 
@@ -10,11 +10,11 @@ class Odometry
 {
     int gyroPort = 0;
     float wheelDiameter = 0.0;
-    const Base* robotBase;
+    Base* robotBase;
     //const Base* == the base is const; Base* const == the pointer is const; const Base* const == both.
 
     // the odometry class should NEVER change Base
-    Odometry(int gyroPort, float wheelDiameter, const Base* robotBase)
+    Odometry(int gyroPort, float wheelDiameter, Base* robotBase)
     {
         this->gyroPort = gyroPort;
         this->wheelDiameter = wheelDiameter;
