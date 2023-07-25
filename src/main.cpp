@@ -66,6 +66,7 @@ int i = 0;
 
 void initialize() {
   shuffleboardClone.pushInt(&i,"randomTest");
+  shuffleboardClone.pushInt(&i,"anotherTest");
   // Print our branding over your terminal :D
 
   // Initialize chassis and auton selector
