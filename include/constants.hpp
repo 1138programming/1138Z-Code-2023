@@ -1,9 +1,6 @@
 #ifndef Constants_HPP
 #define Constants_HPP
 
-#include <functional>
-
-
 // const int kLeftDrivebaseBackPort = 0;
 // const int kLeftDrivebaseCenterPort = 0;
 // const int kLeftDrivebaseFrontPort = 0;
@@ -29,4 +26,7 @@ const double kMovementAllowedError = 0.001;
 //Catapult
 const int kCatapultPort = 7;
 const float kCatapultSpeedMultiplier = 1;
+
+//Auton
+const int kDriveForwardAutonSpeed = 20;
 #endif

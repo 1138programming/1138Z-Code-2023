@@ -1,23 +1,21 @@
 #ifndef CATA_HPP
 #define CATA_HPP
 
-#include "main.h"
-#include "Constants.hpp"
-
+#include "vex.h"
+#include "constants.hpp"
 
 class Catapult {
-    pros::Motor* catapultMotor;
+    vex::motor* catapultMotor;
     public:
-        Catapult(pros::Motor* catapultMotor) {
+        Catapult(vex::motor* catapultMotor) {
             this->catapultMotor = catapultMotor;
         }
         void move() {
-            this->catapultMotor->move(127*kCatapultSpeedMultiplier);
+            this->catapultMotor->setVelocity(100 * kCatapultSpeedMultiplier, vex::pct);
         }
         void stopMoving() {
-            this->catapultMotor->move(0);
+            this->catapultMotor->setVelocity(0,vex::pct);
         }
 };
-
 
 #endif
