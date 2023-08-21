@@ -3,8 +3,8 @@
 
 #include "vex.h"
 #include "constants.hpp"
-//#include "MYPID.h"
-//#include "constants.h"
+#include "MYPID.hpp"
+#include "constants.hpp"
 
 /*
 1800 ticks/rev with 36:1 gears
@@ -16,13 +16,15 @@
 class Base {
     vex::motor_group* leftMotors;
     vex::motor_group* rightMotors;
-    // ADD PIDs
+    MYPID* leftMotorController;
+    MYPID* rightMotorController;
     float wheelDiam;
     public:
-        Base(vex::motor_group* leftMotors, vex::motor_group* rightMotors, float wheelDiam) {
+        Base(vex::motor_group* leftMotors, vex::motor_group* rightMotors, MYPID* leftMotorController, MYPID* rightMotorController, float wheelDiam) {
             this->leftMotors = leftMotors;
             this->rightMotors = rightMotors;
-
+            this->leftMotorController = leftMotorController;
+            this->rightMotorController = rightMotorController;
             this->wheelDiam = wheelDiam;
         }
         void moveLeftMotors(int movement) {

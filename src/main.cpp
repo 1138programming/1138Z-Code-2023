@@ -8,6 +8,12 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "constants.hpp"
+#include "catapult.hpp"
+#include "base.hpp"
+#include "MYPID.hpp"
+#include "auton.hpp"
+#include "intake.hpp"
 
 using namespace vex;
 
@@ -15,6 +21,10 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
+Base robotBase(new motor_group({-1,-2,-3}), new motor_group({11,12,13}));
+Intake intake(new motor(kIntakePort));
+Catapult catapult(new motor(kCatapultPort));
+Autons autons(&robotBase);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -43,6 +53,7 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+  autons.driveForwardForSpecifiedTime(2.0);
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
@@ -60,7 +71,14 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  bool R1LastPressed = false;
+  bool L1LastPressed = false;
+  bool L2LastPressed = false;
+  bool pistonVal = false;
+  pneumatics::pneumatics piston(triport::A);
+
   while (1) {
+  //driver preference.
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
