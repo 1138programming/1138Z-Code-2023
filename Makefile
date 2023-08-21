@@ -1,45 +1,30 @@
-################################################################################
-######################### User configurable parameters #########################
-# filename extensions
-CEXTS:=c
-ASMEXTS:=s S
-CXXEXTS:=cpp c++ cc
+# VEXcode makefile 2019_03_26_01
 
-# probably shouldn't modify these, but you may need them below
-ROOT=.
-FWDIR:=$(ROOT)/firmware
-BINDIR=$(ROOT)/bin
-SRCDIR=$(ROOT)/src
-INCDIR=$(ROOT)/include
+# show compiler output
+VERBOSE = 0
 
-WARNFLAGS+=
-EXTRA_CFLAGS=
-EXTRA_CXXFLAGS=
+# include toolchain options
+include vex/mkenv.mk
 
-# Set to 1 to enable hot/cold linking
-USE_PACKAGE:=1
+# location of the project source cpp and c files
+SRC_C  = $(wildcard src/*.cpp) 
+SRC_C += $(wildcard src/*.c)
+SRC_C += $(wildcard src/*/*.cpp) 
+SRC_C += $(wildcard src/*/*.c)
 
-# Add libraries you do not wish to include in the cold image here
-# EXCLUDE_COLD_LIBRARIES:= $(FWDIR)/your_library.a
-EXCLUDE_COLD_LIBRARIES:= 
+OBJ = $(addprefix $(BUILD)/, $(addsuffix .o, $(basename $(SRC_C))) )
 
-# Set this to 1 to add additional rules to compile your project as a PROS library template
-IS_LIBRARY:=0
-# TODO: CHANGE THIS!
-LIBNAME:=libbest
-VERSION:=1.0.0
-# EXCLUDE_SRC_FROM_LIB= $(SRCDIR)/unpublishedfile.c
-# this line excludes opcontrol.c and similar files
-EXCLUDE_SRC_FROM_LIB+=$(foreach file, $(SRCDIR)/main,$(foreach cext,$(CEXTS),$(file).$(cext)) $(foreach cxxext,$(CXXEXTS),$(file).$(cxxext)))
+# location of include files that c and cpp files depend on
+SRC_H  = $(wildcard include/*.h)
 
-# files that get distributed to every user (beyond your source archive) - add
-# whatever files you want here. This line is configured to add all header files
-# that are in the the include directory get exported
-TEMPLATE_FILES=$(INCDIR)/**/*.h $(INCDIR)/**/*.hpp
+# additional dependancies
+SRC_A  = makefile
 
-.DEFAULT_GOAL=quick
+# project header file locations
+INC_F  = include
 
-################################################################################
-################################################################################
-########## Nothing below this line should be edited by typical users ###########
--include ./common.mk
+# build targets
+all: $(BUILD)/$(PROJECT).bin
+
+# include build rules
+include vex/mkrules.mk
