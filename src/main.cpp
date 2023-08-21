@@ -1,201 +1,93 @@
-#include "main.h"
-#include "Constants.hpp"
-#include "catapult.hpp"
-#include "Base.h"
-#include "MYPID.h"
-#include "auton.hpp"
-#include "intake.h"
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       {file}                                                    */
+/*    Author:       {author}                                                  */
+/*    Created:      {date}                                                    */
+/*    Description:  {description}                                             */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
 
-//Base botBase(1,2,3,11,12,13);
+#include "vex.h"
 
-struct Pos
-{
-  /* data */
-  double x = 0.0;
-  double y = 0.0;
-  double rotation = 0.0;
-} odomRobotPos;
+using namespace vex;
 
+// A global instance of competition
+competition Competition;
 
-/*
-    def pickUpBlock() {
-      moveArmDown();???
-      openArm(); //if closed
-      driveForwards(0.05, meters);
-      closeArm();
-    }
-  br:
-    rotateUntil(45);
-    roateUntil(90);
-    driveBackwards(0.7,meters);
-    rotateUntil(0);
-    pickUpBlock();
-    rotateUntil(135);
+// define your global instances of motors and other devices here
 
-  bl:
-  
-  tr:
-  
-  tl:
+/*---------------------------------------------------------------------------*/
+/*                          Pre-Autonomous Functions                         */
+/*                                                                           */
+/*  You may want to perform some actions before the competition starts.      */
+/*  Do them in the following function.  You must return from this function   */
+/*  or the autonomous and usercontrol tasks will not be started.  This       */
+/*  function is only called once after the V5 has been powered on and        */
+/*  not every time that the robot is disabled.                               */
+/*---------------------------------------------------------------------------*/
 
+void pre_auton(void) {
 
-*/
-
-
-/*
-y mult = \operatorname{abs}\left(\left(\frac{\operatorname{mod}\left(x,180\right)}{90}\right)-1\right);
-
-x mult = \operatorname{abs}\left(-\left(\frac{\operatorname{mod}\left(x,180\right)}{90}\right)+1\right);
-*/
-
-/////
-// For instalattion, upgrading, documentations and tutorials, check out website!
-// https://ez-robotics.github.io/EZ-Template/
-/////
-Base robotBase(new Motor_Group({-1,-2,-3}), new Motor_Group({11,12,13}), new MYPID(0,2,0.5,2,600,-600,0.5), new MYPID(0,2,0.5,2,600,-600,0.5), 4.125);
-Intake intake(new Motor(kIntakePort));
-Catapult catapult(new Motor(kCatapultPort));
-Autons autons(&robotBase);
-/**
- * Runs initialization code. This occurs as soon as the program is started.
- *
- * All other competition modes are blocked by initialize; it is recommended
- * to keep execution time for this mode under a few seconds.
- */
-
-void initialize() {
-  // Print our branding over your terminal :D
-
-  // Initialize chassis and auton selector
+  // All activities that occur before the competition starts
+  // Example: clearing encoders, setting servo positions, ...
 }
 
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              Autonomous Task                              */
+/*                                                                           */
+/*  This task is used to control your robot during the autonomous phase of   */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
 
-
-/**
- * Runs while the robot is in the disabled state of Field Management System or
- * the VEX Competition Switch, following either autonomous or opcontrol. When
- * the robot is enabled, this task will exit.
- */
-void disabled() {
-  // . . .
+void autonomous(void) {
+  // ..........................................................................
+  // Insert autonomous user code here.
+  // ..........................................................................
 }
 
+/*---------------------------------------------------------------------------*/
+/*                                                                           */
+/*                              User Control Task                            */
+/*                                                                           */
+/*  This task is used to control your robot during the user control phase of */
+/*  a VEX Competition.                                                       */
+/*                                                                           */
+/*  You must modify the code to add your own robot specific commands here.   */
+/*---------------------------------------------------------------------------*/
 
+void usercontrol(void) {
+  // User control code here, inside the loop
+  while (1) {
+    // This is the main execution loop for the user control program.
+    // Each time through the loop your program should update motor + servo
+    // values based on feedback from the joysticks.
 
-/**
- * Runs after initialize(), and before autonomous when connected to the Field
- * Management System or the VEX Competition Switch. This is intended for
- * competition-specific initialization routines, such as an autonomous selector
- * on the LCD.
- *
- * This task will exit when the robot is enabled and autonomous or opcontrol
- * starts.
- */
-void competition_initialize() {
-  // . . .
+    // ........................................................................
+    // Insert user code here. This is where you use the joystick values to
+    // update your motors, etc.
+    // ........................................................................
+
+    wait(20, msec); // Sleep the task for a short amount of time to
+                    // prevent wasted resources.
+  }
 }
 
+//
+// Main will set up the competition functions and callbacks.
+//
+int main() {
+  // Set up callbacks for autonomous and driver control periods.
+  Competition.autonomous(autonomous);
+  Competition.drivercontrol(usercontrol);
 
+  // Run the pre-autonomous function.
+  pre_auton();
 
-/**
- * Runs the user autonomous code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the autonomous
- * mode. Alternatively, this function may be called in initialize or opcontrol
- * for non-competition testing purposes.
- *
- * If the robot is disabled or communications is lost, the autonomous task
- * will be stopped. Re-enabling the robot will restart the task, not re-start it
- * from where it left off.
- */
-void autonomous() {
-  autons.driveForwardForSpecifiedTime(2.0);
-  // chassis.reset_pid_targets(); // Resets PID targets to 0
-  // chassis.reset_gyro(); // Reset gyro position to 0
-  // chassis.reset_drive_sensor(); // Reset drive sensors to 0
-  // chassis.set_drive_brake(MOTOR_BRAKE_HOLD); // Set motors to hold.  This helps autonomous consistency.
-
-  // ez::as::auton_selector.call_selected_auton(); // Calls selected auton from autonomous selector.
-}
-
-
-
-/**
- * Runs the operator control code. This function will be started in its own task
- * with the default priority and stack size whenever the robot is enabled via
- * the Field Management System or the VEX Competition Switch in the operator
- * control mode.
- *
- * If no competition control is connected, this function will run immediately
- * following initialize().
- *
- * If the robot is disabled or communications is lost, the
- * operator control task will be stopped. Re-enabling the robot will restart the
- * task, not resume it from where it left off.
- */
-void opcontrol() {
-  bool R1LastPressed = false;
-  bool L1LastPressed = false;
-  bool L2LastPressed = false;
-  bool pistonVal = false;
-  pros::ADIDigitalOut piston('A');
-  // This is preference to what you like to drive on.
-  pros::Controller master(CONTROLLER_MASTER);
+  // Prevent main from exiting with an infinite loop.
   while (true) {
-    robotBase.driveSplitArcade(master.get_analog(ANALOG_RIGHT_X), master.get_analog(ANALOG_LEFT_Y));
-    //Code to get the intake to move on R1 or L1 input.
-
-    if (master.get_digital(DIGITAL_R1)) {
-      if (!R1LastPressed) {
-        intake.toggleDirection();
-      }
-      R1LastPressed = true;
-    }
-    else {
-      R1LastPressed = false;
-    }
-    intake.move(kIntakeSpeed);
-
-
-
-    if (master.get_digital(DIGITAL_R2)) {
-      catapult.move();
-    }
-    else {
-      catapult.stopMoving();
-    }
-
-
-
-    if (master.get_digital(DIGITAL_L1)) {
-      if(!L1LastPressed) {
-        intake.toggleDisable();
-      }
-      L1LastPressed = true;
-    }
-    else {
-      L1LastPressed = false;
-    }
-
-    if (master.get_digital(DIGITAL_L2)) {
-      if(!L2LastPressed) {
-        pistonVal = !pistonVal;
-        piston.set_value(pistonVal);
-      }
-      L2LastPressed = true;
-    }
-    else {
-      L2LastPressed = false;
-    }
-
-    //chassis.tank(); // Tank control    //chassis.arcade_standard(ez::SPLIT); // Standard split arcade
-    // chassis.arcade_standard(ez::SINGLE); // Standard single arcade
-    // chassis.arcade_flipped(ez::SPLIT); // Flipped split arcade
-    // chassis.arcade_flipped(ez::SINGLE); // Flipped single arcade
-    // . . .
-    // Put more user control code here!
-    // . . .
-
-    pros::delay(ez::util::DELAY_TIME); // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+    wait(100, msec);
   }
 }
