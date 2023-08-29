@@ -14,18 +14,31 @@
 #define MOTOR_TICKS_PER_ROTATION 300 // check to make sure this is right on v5 pro
 
 class Base {
-    vex::motor_group* leftMotors;
-    vex::motor_group* rightMotors;
+    vex::motor* leftBackMotor;
+    vex::motor* leftCenterMotor;
+    vex::motor* leftFrontMotor;
+    vex::motor* rightBackMotor;
+    vex::motor* rightCenterMotor;
+    vex::motor* rightFrontMotor;
+
+    // vex::motor_group* leftMotors;
+    // vex::motor_group* rightMotors;
     MYPID* leftMotorController;
     MYPID* rightMotorController;
     float wheelDiam;
+    //, MYPID* leftMotorController, MYPID* rightMotorController, float wheelDiam
     public:
-        Base(vex::motor_group* leftMotors, vex::motor_group* rightMotors, MYPID* leftMotorController, MYPID* rightMotorController, float wheelDiam) {
-            this->leftMotors = leftMotors;
-            this->rightMotors = rightMotors;
-            this->leftMotorController = leftMotorController;
-            this->rightMotorController = rightMotorController;
-            this->wheelDiam = wheelDiam;
+        Base(vex::motor* leftBackMotor, vex::motor* leftCenterMotor, vex::motor* leftFrontMotor, vex::motor* rightBackMotor, vex::motor* rightCenterMotor, vex::motor* rightFrontMotor) {
+            this->leftBackMotor = leftBackMotor;
+            this->leftCenterMotor = leftCenterMotor;
+            this->leftFrontMotor = leftFrontMotor;
+            this->rightBackMotor = rightBackMotor;
+            this->rightCenterMotor = rightCenterMotor;
+            this->rightFrontMotor = rightFrontMotor;
+
+            // this->leftMotorController = leftMotorController;
+            // this->rightMotorController = rightMotorController;
+            // this->wheelDiam = wheelDiam;
         }
         void moveLeftMotors(int movement) {
             if (movement > 100) {
@@ -35,7 +48,9 @@ class Base {
                 movement = -100;
             }
             /*__above = checking to make sure value is not greater than the motors can take (probably handled by lib, but want to make sure.)*/
-            this->leftMotors->setVelocity(movement, vex::pct);
+            this->leftBackMotor->spin(vex::forward, movement, vex::pct);
+            this->leftCenterMotor->spin(vex::forward, movement, vex::pct);
+            this->leftFrontMotor->spin(vex::forward, movement, vex::pct);
         }
         void moveRightMotors(int movement) {
             if (movement > 100) {
@@ -44,7 +59,9 @@ class Base {
             if (movement < -100) {
                 movement = -100;
             }
-            this->rightMotors->setVelocity(movement, vex::pct);
+            this->rightBackMotor->spin(vex::forward, movement, vex::pct);
+            this->rightCenterMotor->spin(vex::forward, movement, vex::pct);
+            this->rightFrontMotor->spin(vex::forward, movement, vex::pct);
         }
         void driveBothSides(int movement) {
             moveLeftMotors(movement);
@@ -54,35 +71,40 @@ class Base {
         double convertTicksToRot(double ticks) {
             return ticks/MOTOR_TICKS_PER_ROTATION;
         }
-        double getRightRot() {
-            this->leftMotors->position(vex::rev);
-        }
-        double getLeftRot() {
-            this->leftMotors->position(vex::rev);
-        }
+        // double getRightRot() {
+        //     this->rightBackMotor->position(vex::rev);
+        //     this->rightCenterMotor->position(vex::rev);
+        //     this->righ->position(vex::rev);
+        // }
+        // double getLeftRot() {
+        //     this->leftMotors->position(vex::rev);
+        //     this->leftMotors->position(vex::rev);
+        //     this->leftMotors->position(vex::rev);
+        // }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
-            leftJoystickYVal = leftJoystickYVal * kTurningMovementMultiplier;
-            int leftControl = (rightJoystickXVal + leftJoystickYVal); // speed + turn
-            int rightControl = (rightJoystickXVal - leftJoystickYVal); // speed - turn
+            leftJoystickYVal = (int)(((float)leftJoystickYVal) * kMovementSpeedMultiplier);
+            rightJoystickXVal = 0;//(int)(((float)rightJoystickXVal) * kTurningMovementMultiplier);
+            int leftControl = (int)(rightJoystickXVal + leftJoystickYVal); // speed + turn
+            int rightControl = (int)(rightJoystickXVal - leftJoystickYVal); // speed - turn
             // __above = getting values for controlling split arcade (no clue how it works, google it IG)__
-            moveRightMotors(leftControl * kMovementSpeedMultiplier);
-            moveLeftMotors(rightControl * kMovementSpeedMultiplier);
+            moveRightMotors(rightControl);
+            moveLeftMotors(leftControl);
         }
-        void setBrakeMode(vex::brakeType brakingMode) {
-            switch (brakingMode)
-            {
-            case vex::brakeType::coast:
-                this->leftMotors->setStopping(vex::brakeType::coast);
-                break;
-            case vex::brakeType::brake:
-                this->leftMotors->setStopping(vex::brakeType::brake);
-                break;
-            case vex::brakeType::hold:
-                this->leftMotors->setStopping(vex::brakeType::hold);
-            default:
-                break;
-            }
-        }
+        // void setBrakeMode(vex::brakeType brakingMode) {
+        //     switch (brakingMode)
+        //     {
+        //     case vex::brakeType::coast:
+        //         this->leftMotors->setStopping(vex::brakeType::coast);
+        //         break;
+        //     case vex::brakeType::brake:
+        //         this->leftMotors->setStopping(vex::brakeType::brake);
+        //         break;
+        //     case vex::brakeType::hold:
+        //         this->leftMotors->setStopping(vex::brakeType::hold);
+        //     default:
+        //         break;
+        //     }
+        // }
 
 };
 

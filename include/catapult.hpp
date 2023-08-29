@@ -6,15 +6,27 @@
 
 class Catapult {
     vex::motor* catapultMotor;
+    bool cataToggle = false;
     public:
         Catapult(vex::motor* catapultMotor) {
             this->catapultMotor = catapultMotor;
         }
-        void move() {
-            this->catapultMotor->setVelocity(100 * kCatapultSpeedMultiplier, vex::pct);
+        void moveWithActiveCheck() {
+            if (this->cataToggle) {
+                moveCatapult();
+            }
+            else {
+                stopMoving();
+            }
+        }
+        void moveCatapult() {
+            this->catapultMotor->spin(vex::forward, 100 * kCatapultSpeedMultiplier, vex::pct);
         }
         void stopMoving() {
-            this->catapultMotor->setVelocity(0,vex::pct);
+            this->catapultMotor->spin(vex::forward, 0,vex::pct);
+        }
+        void catapultToggle() {
+            this->cataToggle = !cataToggle;
         }
 };
 

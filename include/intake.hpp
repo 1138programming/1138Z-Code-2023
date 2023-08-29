@@ -6,36 +6,36 @@
 class Intake {
     vex::motor* intakeMotor;
     bool movingForwards = true;
-    bool disabled = false;
+    bool thisDisabled = false;
     public:
         Intake(vex::motor* intakeMotor) {
             this->intakeMotor = intakeMotor;
         }
         void move(int speed) {
-            if (this->disabled) {
+            if (this->thisDisabled) {
                 this->intakeMotor->setVelocity(0, vex::pct);
                 return;
             }
             speed = speed > 100 ? 100 : speed;
             speed = speed < 0 ? 0 : speed;
             if (!this->movingForwards) {
-                this->intakeMotor->setVector(100);
+                this->intakeMotor->setVelocity(100, vex::pct);
             }
             else if (!this->movingForwards) {
-                this->intakeMotor->setVector(-100);
+                this->intakeMotor->setVelocity(-100, vex::pct);
             }
         }
         void toggleDirection() {
             this->movingForwards = !this->movingForwards;
         }
         void enable() {
-            this->disabled = false;
+            this->thisDisabled = false;
         }
         void disabled() {
-            this->disabled = true;
+            this->thisDisabled = true;
         }
         void toggleDisable() {
-            this->disabled = !this->disabled;
+            this->thisDisabled = !this->thisDisabled;
         }
 };
 

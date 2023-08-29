@@ -15,16 +15,16 @@ const int kIntakeSpeed = 127;
 
 //Base
 //How fast we turn vs. max speed
-const float kTurningMovementMultiplier = 0.9;
+const float kTurningMovementMultiplier = 0;
 // How fast of max speed we actually move
-const float kMovementSpeedMultiplier = 1.0;
+const float kMovementSpeedMultiplier = 0.05;
 
 const double kRotationAllowedError = 0.001;
 const double kMovementAllowedError = 0.001;
 
 
 //Catapult
-const int kCatapultPort = 7;
+const int kCatapultPort = 6;
 const float kCatapultSpeedMultiplier = 1;
 
 //Auton

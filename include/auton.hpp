@@ -8,6 +8,9 @@
 class Autons {
     Base* base;
     public:
+        Autons(Base* base) {
+            this->base = base;
+        }
         void driveForwardForSpecifiedTime(float seconds) {
             float initialTime = vex::timer::systemHighResolution()/1000;
 
@@ -23,9 +26,11 @@ class Autons {
             }
             this->base->driveBothSides(0);
         }
+
         void driveForwardForSpecifiedTimeAndPercent(float seconds, float percent) {
-            float initialTime = vex::timer::systemHighResolution()/1000;
-            while(vex::timer::systemHighResolution()/1000 - initialTime < seconds) {
+            //float initialTime = vex::timer::systemHighResolution()/1000;
+            //while((float)(vex::timer::systemHighResolution()/1000) - initialTime < seconds) {
+            while (1) {
                 this->base->driveBothSides(100 * percent);
                 vex::wait(10,vex::msec);
             }

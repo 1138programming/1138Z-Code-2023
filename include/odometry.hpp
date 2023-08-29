@@ -14,12 +14,12 @@ class Odometry {
     // the odometry class should NEVER change Base
     private:
         double absD(double num) {
-            return num < 0
+            return num < 0;
         }
         double convertDegToRad(double degrees) {
             return degrees * (PI/180);
         }
-        convertRadToDeg(double radians) {
+        double convertRadToDeg(double radians) {
             return radians * (180/PI);
         }
     public:

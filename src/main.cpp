@@ -21,9 +21,15 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-Base robotBase(new motor_group({-1,-2,-3}), new motor_group({11,12,13}));
-Intake intake(new motor(kIntakePort));
-Catapult catapult(new motor(kCatapultPort));
+vex::motor bl(0, true);
+vex::motor cl(1, true);
+vex::motor fl(2, true);
+vex::motor br(10);
+vex::motor cr(11);
+vex::motor fr(12);
+Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
+Intake intake(new vex::motor(kIntakePort));
+Catapult catapult(new vex::motor(kCatapultPort));
 Autons autons(&robotBase);
 
 /*---------------------------------------------------------------------------*/
@@ -56,7 +62,7 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.8);
+  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.05);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -75,8 +81,11 @@ void usercontrol(void) {
   bool L1LastPressed = false;
   bool L2LastPressed = false;
   bool pistonVal = false;
-  pneumatics::pneumatics piston(triport::A);
 
+  vex::brain::lcd LCD;
+
+  vex::controller controllerMain = vex::controller(vex::primary);
+  bool mainControllerR1LastPressed = false;
   while (1) {
   //driver preference.
     // This is the main execution loop for the user control program.
@@ -88,6 +97,16 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
 
+    // code to get the catapult working...
+    catapult.moveWithActiveCheck();
+    if (controllerMain.ButtonR1.pressing() && !mainControllerR1LastPressed) {
+      catapult.catapultToggle();
+    }
+    // drive code... TODO: reverse dive base in base.hpp - complete?
+    robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
+
+    mainControllerR1LastPressed = controllerMain.ButtonR1.pressing();
+    
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
