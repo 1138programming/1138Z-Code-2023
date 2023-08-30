@@ -14,6 +14,7 @@
 #include "MYPID.hpp"
 #include "auton.hpp"
 #include "intake.hpp"
+#include "odometry.hpp"
 //pleaseplease show up on github
 
 using namespace vex;
@@ -28,10 +29,12 @@ vex::motor fl(2, true);
 vex::motor br(10);
 vex::motor cr(11);
 vex::motor fr(12);
+// user-defined classes
 Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
 Intake intake(new vex::motor(kIntakePort));
 Catapult catapult(new vex::motor(kCatapultPort));
 Autons autons(&robotBase);
+Odometry odom(3, kWheelDiamInches, kOdomGearRatio, &robotBase);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -63,7 +66,8 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
+  //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
+  odom.moveForwardToPosInInches(6.0, 20);
 }
 
 /*---------------------------------------------------------------------------*/

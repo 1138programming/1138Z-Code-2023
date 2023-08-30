@@ -67,20 +67,18 @@ class Base {
             moveLeftMotors(movement);
             moveRightMotors(movement);
         }
-        // double averageArray()
         double convertTicksToRot(double ticks) {
             return ticks/MOTOR_TICKS_PER_ROTATION;
         }
-        // double getRightRot() {
-        //     this->rightBackMotor->position(vex::rev);
-        //     this->rightCenterMotor->position(vex::rev);
-        //     this->righ->position(vex::rev);
-        // }
-        // double getLeftRot() {
-        //     this->leftMotors->position(vex::rev);
-        //     this->leftMotors->position(vex::rev);
-        //     this->leftMotors->position(vex::rev);
-        // }
+        double getAverageRightRot() {
+            return (this->rightBackMotor->position(vex::rev) + this->rightCenterMotor->position(vex::rev) + this->rightFrontMotor->position(vex::rev))/3;
+        }
+        double getAverageLeftRot() {
+            return (this->leftBackMotor->position(vex::rev) + this->leftCenterMotor->position(vex::rev) + this->leftFrontMotor->position(vex::rev))/3;
+        }
+        double getAverageRotationBothSides() {
+            return (getAverageLeftRot() + getAverageRightRot())/2;
+        }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
             leftJoystickYVal = (int)(((float)leftJoystickYVal) * kMovementSpeedMultiplier);
             rightJoystickXVal = 0;//(int)(((float)rightJoystickXVal) * kTurningMovementMultiplier);

@@ -9,9 +9,10 @@
 class Odometry {
     int gyroPort = 0;
     float wheelDiameter = 0.0;
-    const Base* robotBase;
+    float gearRatio = 1.0;
+    Base* robotBase;
     //const Base* == the base is const; Base* const == the pointer is const; const Base* const == both.
-    // the odometry class should NEVER change Base
+    // the odometry class should NEVER change Base, but we can't garuentee that, as we have to access the functions in base. BE CAREFUL!
     private:
         double absD(double num) {
             return num < 0;
@@ -23,10 +24,16 @@ class Odometry {
             return radians * (180/PI);
         }
     public:
-        Odometry(int gyroPort, float wheelDiameter, const Base* robotBase) {
+        Odometry(int gyroPort, float wheelDiameter, Base* robotBase) {
             this->gyroPort = gyroPort;
             this->robotBase = robotBase;
             this->wheelDiameter = wheelDiameter;
+        }
+        Odometry(int gyroPort, float wheelDiameter, float gearRatio, Base* robotBase) {
+            this->gyroPort = gyroPort;
+            this->robotBase = robotBase;
+            this->wheelDiameter = wheelDiameter;
+            this->gearRatio = gearRatio;
         }
         double getXPosMultFromDegrees(double gyroDegrees) {
             double degreesNormalized = absD(fmod(gyroDegrees, 360));
@@ -43,8 +50,19 @@ class Odometry {
             }
             return convertRadToDeg(sin(convertDegToRad(degreesNormalized)));
         }
-        void moveForwardToPos(double pos) {
+        double getActualPosFromRot(double rot) {
+            return rot * this->wheelDiameter * this->gearRatio;
+        }
+        void moveForwardToPosInInches(double pos, int speed) {
+            float totalAverageRotationInches = getActualPosFromRot(this->robotBase->getAverageRightRot());
+            float startRot = totalAverageRotationInches;
 
+            while (totalAverageRotationInches - startRot != pos) {
+                this->robotBase->driveBothSides(speed);
+                vex::wait(10,vex::msec);
+                totalAverageRotationInches = getActualPosFromRot(this->robotBase->getAverageRightRot());
+            }
+            this->robotBase->driveBothSides(0);
         }
 };
 

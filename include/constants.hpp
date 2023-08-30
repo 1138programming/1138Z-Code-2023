@@ -29,4 +29,8 @@ const float kCatapultSpeedMultiplier = 1;
 
 //Auton
 const int kDriveForwardAutonSpeed = 20;
+
+//Odometry
+const float kOdomGearRatio = 36.0/60.0;
+const float kWheelDiamInches = 3.25;
 #endif
