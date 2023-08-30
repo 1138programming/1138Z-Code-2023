@@ -14,6 +14,7 @@
 #include "MYPID.hpp"
 #include "auton.hpp"
 #include "intake.hpp"
+//pleaseplease show up on github
 
 using namespace vex;
 
@@ -62,7 +63,7 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.05);
+  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
 }
 
 /*---------------------------------------------------------------------------*/

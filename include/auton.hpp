@@ -12,14 +12,14 @@ class Autons {
             this->base = base;
         }
         void driveForwardForSpecifiedTime(float seconds) {
-            float initialTime = vex::timer::systemHighResolution()/1000;
+            float initialTime = vex::timer::system()/1000;
 
             // while(pros::millis()/1000 - initialTime < seconds/3) {
             //     this->base->moveLeftMotors(100);
             //     this->base->moveRightMotors(-100);
             // }
 
-            while(vex::timer::systemHighResolution()/1000 - initialTime < seconds) {
+            while(vex::timer::system()/1000 - initialTime < seconds) {
                 this->base->driveBothSides(kDriveForwardAutonSpeed);
                 //wait, so that the scheduler has some time to do stuff
                 vex::wait(10,vex::msec);
@@ -28,9 +28,8 @@ class Autons {
         }
 
         void driveForwardForSpecifiedTimeAndPercent(float seconds, float percent) {
-            //float initialTime = vex::timer::systemHighResolution()/1000;
-            //while((float)(vex::timer::systemHighResolution()/1000) - initialTime < seconds) {
-            while (1) {
+            float initialTime = vex::timer::system()/1000; // we divide by 1000 to convert to seconds instead of MS
+            while((float)(vex::timer::system()/1000) - initialTime < seconds) {
                 this->base->driveBothSides(100 * percent);
                 vex::wait(10,vex::msec);
             }
