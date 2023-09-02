@@ -1,17 +1,21 @@
-// #ifndef GYRO_HPP
-// #define GYRO_HPP
+#ifndef GYRO_HPP
+#define GYRO_HPP
 
-// #include "vex.h"
+#include "vex.h"
 
-// class Gyro {
-//     vex::inertial::gyro gyro;
-//     public:
-//         Gyro(int gyroPort) {
-//             this->gyro = pros::inertial::gyro(gyroPort);
-//         }
-//         void reset() {
-//             this->gyro.reset();
-//         }
-// };
+class Gyro {
+    vex::inertial* gyro;
+    public:
+        Gyro(vex::inertial* gyro) {
+            this->gyro = gyro;
+        }
+        void reset() {
+            this->gyro->resetHeading();
+            this->gyro->resetRotation();
+        }
+        double getHeading() {
+            return this->gyro->heading();
+        }
+};
 
-// #endif
+#endif
