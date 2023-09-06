@@ -81,7 +81,7 @@ class Base {
         }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
             leftJoystickYVal = (int)(((float)leftJoystickYVal) * kMovementSpeedMultiplier);
-            rightJoystickXVal = 0;//(int)(((float)rightJoystickXVal) * kTurningMovementMultiplier);
+            rightJoystickXVal = (int)(((float)rightJoystickXVal) * kTurningMovementMultiplier);
             int leftControl = (int)(rightJoystickXVal + leftJoystickYVal); // speed + turn
             int rightControl = (int)(rightJoystickXVal - leftJoystickYVal); // speed - turn
             // __above = getting values for controlling split arcade (no clue how it works, google it IG)__

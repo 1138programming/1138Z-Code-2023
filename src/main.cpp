@@ -66,8 +66,8 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
-  odom.moveForwardToPosInInches(6.0, 20);
+  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
+  //odom.moveForwardToPosInInches(6.0, 20);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -107,6 +107,9 @@ void usercontrol(void) {
     if (controllerMain.ButtonR1.pressing() && !mainControllerR1LastPressed) {
       catapult.catapultToggle();
     }
+    catapult.initHoldMotor(controllerMain.ButtonA.pressing());
+    LCD.clearScreen();
+    LCD.print(controllerMain.ButtonA.pressing());
     // drive code... TODO: reverse dive base in base.hpp - complete?
     robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
 
