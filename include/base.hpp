@@ -88,6 +88,10 @@ class Base {
             moveRightMotors(rightControl);
             moveLeftMotors(leftControl);
         }
+        void turn(int movement) {
+            moveLeftMotors(-movement);
+            moveRightMotors(movement);
+        }
         // void setBrakeMode(vex::brakeType brakingMode) {
         //     switch (brakingMode)
         //     {

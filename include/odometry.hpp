@@ -2,6 +2,7 @@
 #define ODOMETRY_HPP
 
 #include "vex.h"
+#include "gyro.hpp"
 #include "base.hpp"
 
 #define PI 3.14159265358979323846
@@ -11,6 +12,7 @@ class Odometry {
     float wheelDiameter = 0.0;
     float gearRatio = 1.0;
     Base* robotBase;
+    Gyro* gyro;
     //const Base* == the base is const; Base* const == the pointer is const; const Base* const == both.
     // the odometry class should NEVER change Base, but we can't garuentee that, as we have to access the functions in base. BE CAREFUL!
     private:
@@ -23,17 +25,26 @@ class Odometry {
         double convertRadToDeg(double radians) {
             return radians * (180/PI);
         }
+        bool doubleIsWithinMarginOfError(double num, double comparison, double marginOfError) {
+            // if (num > comparison - marginOfError && num < comparison + marginOfError) {
+            //     return true;
+            // }
+            // return false;
+            return true;
+        }
     public:
-        Odometry(int gyroPort, float wheelDiameter, Base* robotBase) {
+        Odometry(int gyroPort, float wheelDiameter, Base* robotBase, Gyro* gyro) {
             this->gyroPort = gyroPort;
             this->robotBase = robotBase;
             this->wheelDiameter = wheelDiameter;
+            this->gyro = gyro;
         }
-        Odometry(int gyroPort, float wheelDiameter, float gearRatio, Base* robotBase) {
+        Odometry(int gyroPort, float wheelDiameter, float gearRatio, Base* robotBase, Gyro* gyro) {
             this->gyroPort = gyroPort;
             this->robotBase = robotBase;
             this->wheelDiameter = wheelDiameter;
             this->gearRatio = gearRatio;
+            this->gyro = gyro;
         }
         double getXPosMultFromDegrees(double gyroDegrees) {
             double degreesNormalized = absD(fmod(gyroDegrees, 360));
@@ -63,6 +74,18 @@ class Odometry {
                 totalAverageRotationInches = getActualPosFromRot(this->robotBase->getAverageRightRot());
             }
             this->robotBase->driveBothSides(0);
+        }
+        void turnToPos(double targetPosition) {
+            this->gyro->resetGyro();
+            double initialGyroPos = this->gyro->getHeading();
+            while (!(this->doubleIsWithinMarginOfError(this->gyro->getHeading(),targetPosition,100))) {
+                if (initialGyroPos > targetPosition) {
+                    this->robotBase->turn(1);
+                }
+                else {
+                    this->robotBase->turn(-1);
+                }
+            }
         }
 };
 

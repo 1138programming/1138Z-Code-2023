@@ -15,6 +15,7 @@
 #include "auton.hpp"
 #include "intake.hpp"
 #include "odometry.hpp"
+#include "gyro.hpp"
 //pleaseplease show up on github
 
 using namespace vex;
@@ -23,6 +24,7 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
+vex::inertial inertialSensor(13);
 vex::motor bl(0, true);
 vex::motor cl(1, true);
 vex::motor fl(2, true);
@@ -34,7 +36,8 @@ Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
 Intake intake(new vex::motor(kIntakePort));
 Catapult catapult(new vex::motor(kCatapultPort));
 Autons autons(&robotBase);
-Odometry odom(3, kWheelDiamInches, kOdomGearRatio, &robotBase);
+Gyro gyroClass(&inertialSensor);
+Odometry odom(3, kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -66,7 +69,8 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
+  //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
+  odom.turnToPos(280);
   //odom.moveForwardToPosInInches(6.0, 20);
 }
 

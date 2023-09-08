@@ -16,6 +16,15 @@ class Gyro {
         double getHeading() {
             return this->gyro->heading();
         }
+        double getRot() {
+            return this->gyro->angle();
+        }
+        void resetGyro() {
+            this->gyro->startCalibration(0);
+            while (this->gyro->isCalibrating()) {
+                vex::wait(10,vex::msec);
+            }
+        }
 };
 
 #endif
