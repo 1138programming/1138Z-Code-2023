@@ -1,9 +1,9 @@
-#ifndef MYPID_HPP
-#define MYPID_HPP
+#ifndef PID_HPP
+#define PID_HPP
 
 #include "vex.h"
 
-class MYPID {
+class PID {
   private:
     double setpoint;
 
@@ -37,7 +37,7 @@ class MYPID {
       this->outputMax = outputMax;
       this->outputMin = outputMin;
       this->allowedError = allowedError;
-      this->lastMillis = vex::timer::systemHighResolution();
+      this->lastMillis = vex::timer::system();
     }
 
     void setSetpoint(double setpoint) {
@@ -46,7 +46,7 @@ class MYPID {
 
     double calculate(double process_var) {
 
-      this->iterationTime = vex::timer::systemHighResolution() - lastMillis;
+      this->iterationTime = vex::timer::system() - lastMillis;
 
       if (abs(setpoint - process_var) < allowedError) {
         return 0.0;
@@ -69,7 +69,7 @@ class MYPID {
       //   return outputMin;
       // }
       
-      this->lastMillis = vex::timer::systemHighResolution();
+      this->lastMillis = vex::timer::system();
 
       return output;
     }
