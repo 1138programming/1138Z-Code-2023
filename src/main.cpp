@@ -50,7 +50,6 @@ Odometry odom(3, kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass);
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -70,7 +69,8 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
   //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
-  odom.turnToPos(280);
+  odom.turnToPos(180.0);
+  //robotBase.turn(20);
   //odom.moveForwardToPosInInches(6.0, 20);
 }
 
@@ -113,7 +113,9 @@ void usercontrol(void) {
     }
     catapult.initHoldMotor(controllerMain.ButtonA.pressing());
     LCD.clearScreen();
-    LCD.print(controllerMain.ButtonA.pressing());
+    //LCD.print(controllerMain.ButtonA.pressing());
+    //LCD.printAt(0,50,"%f",(robotBase.getAverageRightRot() * kWheelDiamInches)/kOdomGearRatio);
+    LCD.printAt(0,50,"%f",gyroClass.getHeading());
     // drive code... TODO: reverse dive base in base.hpp - complete?
     robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
 

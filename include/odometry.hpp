@@ -26,11 +26,10 @@ class Odometry {
             return radians * (180/PI);
         }
         bool doubleIsWithinMarginOfError(double num, double comparison, double marginOfError) {
-            // if (num > comparison - marginOfError && num < comparison + marginOfError) {
-            //     return true;
-            // }
-            // return false;
-            return true;
+            if (num > comparison - marginOfError && num < comparison + marginOfError) {
+                return true;
+            }
+            return false;
         }
     public:
         Odometry(int gyroPort, float wheelDiameter, Base* robotBase, Gyro* gyro) {
@@ -77,15 +76,17 @@ class Odometry {
         }
         void turnToPos(double targetPosition) {
             this->gyro->resetGyro();
-            double initialGyroPos = this->gyro->getHeading();
-            while (!(this->doubleIsWithinMarginOfError(this->gyro->getHeading(),targetPosition,100))) {
-                if (initialGyroPos > targetPosition) {
-                    this->robotBase->turn(1);
+            //!(this->doubleIsWithinMarginOfError(this->gyro->getRot(),targetPosition,1))
+            while (!(this->doubleIsWithinMarginOfError(this->gyro->getRot(),targetPosition,10))) {
+                vex::wait(10,vex::msec);
+                if (this->gyro->getRot() > targetPosition) {
+                    (*this->robotBase).turn(20);
                 }
                 else {
-                    this->robotBase->turn(-1);
+                    (*this->robotBase).turn(-20);
                 }
             }
+            this->robotBase->stop();
         }
 };
 

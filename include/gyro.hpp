@@ -17,12 +17,13 @@ class Gyro {
             return this->gyro->heading();
         }
         double getRot() {
-            return this->gyro->angle();
+            return this->gyro->yaw();
+            //return this->gyro->angle();
         }
         void resetGyro() {
-            this->gyro->startCalibration(0);
-            while (this->gyro->isCalibrating()) {
-                vex::wait(10,vex::msec);
+            this->gyro->calibrate();
+            while(this->gyro->isCalibrating()) {
+                vex::wait(10, vex::msec);
             }
         }
 };

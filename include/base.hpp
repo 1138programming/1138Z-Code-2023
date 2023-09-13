@@ -67,6 +67,10 @@ class Base {
             moveLeftMotors(movement);
             moveRightMotors(movement);
         }
+        void stop() {
+            moveLeftMotors(0);
+            moveRightMotors(0);
+        }
         double convertTicksToRot(double ticks) {
             return ticks/MOTOR_TICKS_PER_ROTATION;
         }
