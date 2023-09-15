@@ -22,7 +22,7 @@ class Autons {
             while(vex::timer::system()/1000 - initialTime < seconds) {
                 this->base->driveBothSides(kDriveForwardAutonSpeed);
                 //wait, so that the scheduler has some time to do stuff
-                vex::wait(10,vex::msec);
+                vex::wait(10, vex::msec);
             }
             this->base->driveBothSides(0);
         }
@@ -31,7 +31,7 @@ class Autons {
             float initialTime = vex::timer::system()/1000; // we divide by 1000 to convert to seconds instead of MS
             while((float)(vex::timer::system()/1000) - initialTime < seconds) {
                 this->base->driveBothSides(100 * percent);
-                vex::wait(10,vex::msec);
+                vex::wait(10, vex::msec);
             }
             this->base->driveBothSides(0);
         }

@@ -24,20 +24,21 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-vex::inertial inertialSensor(13);
-vex::motor bl(0, true);
-vex::motor cl(1, true);
-vex::motor fl(2, true);
-vex::motor br(10);
-vex::motor cr(11);
-vex::motor fr(12);
+PID odomTurningPID(0.0, -0.75, 0.0, 0.0, 100.0, -100.0, 0.1);
+vex::inertial inertialSensor(kInertialSensorPort);
+vex::motor bl(kBackLeftMotorPort);
+vex::motor cl(kCenterLeftPort);
+vex::motor fl(kFrontLeftPort);
+vex::motor br(kBackRightMotorPort, true);
+vex::motor cr(kCenterRightPort, true);
+vex::motor fr(kFrontRightPort, true);
 // user-defined classes
 Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
 Intake intake(new vex::motor(kIntakePort));
 Catapult catapult(new vex::motor(kCatapultPort));
 Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
-Odometry odom(3, kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass);
+Odometry odom(3, kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -69,7 +70,7 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
   //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
-  odom.turnToPos(180.0);
+  odom.turnToPosPID(180.0);
   //robotBase.turn(20);
   //odom.moveForwardToPosInInches(6.0, 20);
 }
@@ -86,10 +87,10 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  bool R1LastPressed = false;
-  bool L1LastPressed = false;
-  bool L2LastPressed = false;
-  bool pistonVal = false;
+  // bool R1LastPressed = false;
+  // bool L1LastPressed = false;
+  // bool L2LastPressed = false;
+  // bool pistonVal = false;
 
   vex::brain::lcd LCD;
 

@@ -13,6 +13,7 @@ class Odometry {
     float gearRatio = 1.0;
     Base* robotBase;
     Gyro* gyro;
+    PID* odomTurningPID;
     //const Base* == the base is const; Base* const == the pointer is const; const Base* const == both.
     // the odometry class should NEVER change Base, but we can't garuentee that, as we have to access the functions in base. BE CAREFUL!
     private:
@@ -38,12 +39,13 @@ class Odometry {
             this->wheelDiameter = wheelDiameter;
             this->gyro = gyro;
         }
-        Odometry(int gyroPort, float wheelDiameter, float gearRatio, Base* robotBase, Gyro* gyro) {
+        Odometry(int gyroPort, float wheelDiameter, float gearRatio, Base* robotBase, Gyro* gyro, PID* turningPID) {
             this->gyroPort = gyroPort;
             this->robotBase = robotBase;
             this->wheelDiameter = wheelDiameter;
             this->gearRatio = gearRatio;
             this->gyro = gyro;
+            this->odomTurningPID = turningPID;
         }
         double getXPosMultFromDegrees(double gyroDegrees) {
             double degreesNormalized = absD(fmod(gyroDegrees, 360));
@@ -77,14 +79,25 @@ class Odometry {
         void turnToPos(double targetPosition) {
             this->gyro->resetGyro();
             //!(this->doubleIsWithinMarginOfError(this->gyro->getRot(),targetPosition,1))
-            while (!(this->doubleIsWithinMarginOfError(this->gyro->getRot(),targetPosition,10))) {
+            while (!(this->doubleIsWithinMarginOfError(this->gyro->getHeading(),targetPosition,10))) {
                 vex::wait(10,vex::msec);
-                if (this->gyro->getRot() > targetPosition) {
-                    (*this->robotBase).turn(20);
+                if (this->gyro->getHeading() > targetPosition) {
+                    (*this->robotBase).turn(50);
                 }
                 else {
-                    (*this->robotBase).turn(-20);
+                    (*this->robotBase).turn(-50);
                 }
+            }
+            this->robotBase->stop();
+        }
+        void turnToPosPID(double targetPosition) {
+            this->gyro->resetGyro();
+            this->odomTurningPID->setSetpoint(targetPosition);
+            //!(this->doubleIsWithinMarginOfError(this->gyro->getRot(),targetPosition,1))
+            while (!(this->doubleIsWithinMarginOfError(this->gyro->getHeading(),targetPosition,10))) {
+                vex::wait(10,vex::msec);
+                double PIDVal = this->odomTurningPID->calculate(this->gyro->getHeading());
+                this->robotBase->turn(PIDVal);
             }
             this->robotBase->stop();
         }

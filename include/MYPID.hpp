@@ -21,6 +21,7 @@ class PID {
     double bias = 0;
     double allowedError = 0.001;
 
+
     std::uint32_t iterationTime = 0;
     std::uint32_t lastMillis = 1;
 
@@ -29,7 +30,7 @@ class PID {
     }
 
   public:
-    MYPID(double setpoint, double Kp, double Ki, double Kd, double outputMax, double outputMin, double allowedError) {
+    PID(double setpoint, double Kp, double Ki, double Kd, double outputMax, double outputMin, double allowedError) {
       this->setpoint = setpoint;
       this->Kp = Kp;
       this->Ki = Ki;

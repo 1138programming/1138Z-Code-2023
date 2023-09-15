@@ -23,8 +23,8 @@ class Base {
 
     // vex::motor_group* leftMotors;
     // vex::motor_group* rightMotors;
-    MYPID* leftMotorController;
-    MYPID* rightMotorController;
+    PID* leftMotorController;
+    PID* rightMotorController;
     float wheelDiam;
     //, MYPID* leftMotorController, MYPID* rightMotorController, float wheelDiam
     public:
