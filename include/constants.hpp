@@ -22,6 +22,7 @@ const int kFrontLeftPort = 12;
 const int kBackRightMotorPort = 17;
 const int kCenterRightPort = 18;
 const int kFrontRightPort = 19;
+
 //How fast we turn vs. max speed
 const float kTurningMovementMultiplier = 0.9;
 // How fast of max speed we actually move
@@ -32,6 +33,7 @@ const double kMovementAllowedError = 0.001;
 
 //Catapult
 const int kCatapultPort = 6;
+
 const float kCatapultSpeedMultiplier = 1;
 
 //Auton

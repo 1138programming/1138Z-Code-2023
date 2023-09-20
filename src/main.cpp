@@ -94,8 +94,6 @@ void usercontrol(void) {
   // bool L1LastPressed = false;
   // bool L2LastPressed = false;
   // bool pistonVal = false;
-  BRAINSCREEN.clearScreen();
-  BRAINSCREEN.printAt(50,50,"help: %d",counter);
 
   vex::controller controllerMain = vex::controller(vex::primary);
   bool mainControllerR1LastPressed = false;
@@ -116,10 +114,7 @@ void usercontrol(void) {
       catapult.catapultToggle();
     }
     catapult.initHoldMotor(controllerMain.ButtonA.pressing());
-    //LCD.clearScreen();
-    //LCD.print(controllerMain.ButtonA.pressing());
-    //LCD.printAt(0,50,"%f",(robotBase.getAverageRightRot() * kWheelDiamInches)/kOdomGearRatio);
-    //LCD.printAt(0,50,"%f",gyroClass.getHeading());
+    
     // drive code... TODO: reverse dive base in base.hpp - complete?
     robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
 
