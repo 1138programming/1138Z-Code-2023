@@ -8,6 +8,7 @@
 #define PI 3.14159265358979323846
 
 class Odometry {
+    
     int gyroPort = 0;
     float wheelDiameter = 0.0;
     float gearRatio = 1.0;

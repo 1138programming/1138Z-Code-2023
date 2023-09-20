@@ -39,6 +39,8 @@ Catapult catapult(new vex::motor(kCatapultPort));
 Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 Odometry odom(3, kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID);
+vex::brain::lcd BRAINSCREEN;
+
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -70,7 +72,8 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
   //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
-  odom.turnToPosPID(180.0);
+  
+  //odom.turnToPosPID(180.0);
   //robotBase.turn(20);
   //odom.moveForwardToPosInInches(6.0, 20);
 }
@@ -91,8 +94,8 @@ void usercontrol(void) {
   // bool L1LastPressed = false;
   // bool L2LastPressed = false;
   // bool pistonVal = false;
-
-  vex::brain::lcd LCD;
+  BRAINSCREEN.clearScreen();
+  BRAINSCREEN.printAt(50,50,"help: %d",counter);
 
   vex::controller controllerMain = vex::controller(vex::primary);
   bool mainControllerR1LastPressed = false;
@@ -113,10 +116,10 @@ void usercontrol(void) {
       catapult.catapultToggle();
     }
     catapult.initHoldMotor(controllerMain.ButtonA.pressing());
-    LCD.clearScreen();
+    //LCD.clearScreen();
     //LCD.print(controllerMain.ButtonA.pressing());
     //LCD.printAt(0,50,"%f",(robotBase.getAverageRightRot() * kWheelDiamInches)/kOdomGearRatio);
-    LCD.printAt(0,50,"%f",gyroClass.getHeading());
+    //LCD.printAt(0,50,"%f",gyroClass.getHeading());
     // drive code... TODO: reverse dive base in base.hpp - complete?
     robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
 
