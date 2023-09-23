@@ -33,6 +33,12 @@ class Odometry {
             }
             return false;
         }
+        double normalizeDegrees(double degrees) {
+            double degreesNormalized = absD(fmod(degrees, 360));
+            if (degreesNormalized < 0) {
+                degreesNormalized +=360; // Convert the number to positive degrees so that -1 is actually equal to 359 (considering we're using cos now, this is probably an unnessacary step.)
+            }
+        }
     public:
         Odometry(int gyroPort, float wheelDiameter, Base* robotBase, Gyro* gyro) {
             this->gyroPort = gyroPort;
