@@ -36,8 +36,9 @@ class Odometry {
         double normalizeDegrees(double degrees) {
             double degreesNormalized = absD(fmod(degrees, 360));
             if (degreesNormalized < 0) {
-                degreesNormalized +=360; // Convert the number to positive degrees so that -1 is actually equal to 359 (considering we're using cos now, this is probably an unnessacary step.)
+                degreesNormalized +=360; // Convert the number to positive degrees so that -1 is actually equal to 359 (considering we're using sin/cos now, this is probably an unnessacary step.)
             }
+            return degreesNormalized;
         }
     public:
         Odometry(int gyroPort, float wheelDiameter, Base* robotBase, Gyro* gyro) {
@@ -55,18 +56,12 @@ class Odometry {
             this->odomTurningPID = turningPID;
         }
         double getXPosMultFromDegrees(double gyroDegrees) {
-            double degreesNormalized = absD(fmod(gyroDegrees, 360));
-            if (degreesNormalized < 0) {
-                degreesNormalized = 360 + degreesNormalized; // Convert the number to positive degrees so that -1 is actually equal to 359 (considering we're using cos now, this is probably an unnessacary step.)
-            }
+            double degreesNormalized = normalizeDegrees(fmod(gyroDegrees, 360));
             // cos() takes a value in radians, so we have to convert to and from them.
             return convertRadToDeg(cos(convertDegToRad(degreesNormalized)));
         }
         double getYPosMultFromDeg(double gyroDegrees) {
-            double degreesNormalized = absD(fmod(gyroDegrees,360)); // fmod = % operator
-            if (degreesNormalized < 0) {
-                degreesNormalized = 360 + degreesNormalized; // again, probably unnessacary but idc
-            }
+            double degreesNormalized = normalizeDegrees(fmod(gyroDegrees,360)); // fmod = % operator
             return convertRadToDeg(sin(convertDegToRad(degreesNormalized)));
         }
         double getActualPosFromRot(double rot) {
