@@ -184,7 +184,7 @@ class Odometry {
             }
         }
         // TBD
-        void moveInInchesOdomPID(double inches, double allowedError) {
+        void moveInInchesOdomPID(double inches) {
             double gyroHeader = this->gyro->getHeading();
 
             double xMultiplier = this->getXPosMultFromDegreesInRad(gyroHeader);
@@ -198,19 +198,26 @@ class Odometry {
 
             double initialDisplacement = this->pythagoreanTheormBetweenTwoPoints(initialPosX, initialPosY, posToMoveToX, posToMoveToY);
             double movement = -0.001;
-            
-            if (initialDisplacement == inches) {
-                return;
-            }
 
             this->odomMovementPID->setSetpoint(0.0);
-            while (movement != 0.0) {
+            while (!(this->odomMovementPID->isPIDFinished())) {
                 double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
                 movement = this->odomMovementPID->calculate(inches - difference);
                 this->robotBase->driveBothSides(movement);
                 vex::wait(10,vex::msec);
                 this->pollAndUpdateOdom();
             }
+        }
+        double getDisplacement(double inches) {
+            double gyroHeader = this->gyro->getHeading();
+
+            double xMultiplier = this->getXPosMultFromDegreesInRad(gyroHeader);
+            double yMultiplier = this->getYPosMultFromDegInRad(gyroHeader);
+
+            double posToMoveToX = (this->xPos + (inches * xMultiplier));
+            double posToMoveToY = (this->yPos + (inches * yMultiplier));
+
+            return this->pythagoreanTheormBetweenTwoPoints(this->getX(), this->getY(), posToMoveToX, posToMoveToY);
         }
 };
 

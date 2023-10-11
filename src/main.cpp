@@ -25,7 +25,7 @@ competition Competition;
 vex::brain Brain = vex::brain();
 // define your global instances of motors and other devices here
 PID odomTurningPID(0.0, -0.75, 0.0, 0.0, 100.0, -100.0, 0.1);
-PID odomMovementPID(0.0, 20, 0.0, 0.0, 100.0, -100.0, 0.1);
+PID odomMovementPID(0.0, 20, 0.0, 0.0, 100.0, -100.0, 4.0);
 vex::inertial inertialSensor(kInertialSensorPort);
 // vex::motor bl(kBackLeftMotorPort, true);
 // vex::motor cl(kCenterLeftPort);
@@ -87,7 +87,7 @@ void autonomous(void) {
   odom.setY(0.0);
   //odom.turnToPosPID(180.0);
   //robotBase.turn(20);
-  odom.moveInInchesOdomPID(2.0, 1.0);
+  odom.moveInInchesOdomPID(20.0);
   //odom.moveInInchesOdom(1.0, 0.1);
   //odom.turnToPosPID(180, 5.0);
   // vex::wait(100, vex::msec);
@@ -108,6 +108,7 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
+  gyroClass.resetGyro();
   // not nearly as necessary in driverControl.
   // User control code here, inside the loop
   // bool R1LastPressed = false;
@@ -127,6 +128,7 @@ void usercontrol(void) {
     odom.pollAndUpdateOdom();
     BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
     BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
+    BRAINSCREEN.printAt(50,150,"Inches: %lf, thrm: %lf", 5.0, odom.getDisplacement(5.0));
 
     if (controllerMain.ButtonL1.pressing() && !mainControllerL1LastPressed) {
       driveBaseWings.set(!(driveBaseWings.value()));

@@ -21,6 +21,7 @@ class PID {
     double bias = 0;
     double allowedError = 0.001;
 
+    bool isFinished = false;
 
     std::uint32_t iterationTime = 0;
     std::uint32_t lastMillis = 1;
@@ -45,12 +46,20 @@ class PID {
       this->setpoint = setpoint;
     }
 
+    bool isPIDFinished() {
+      return this->isFinished;
+    }
+
     double calculate(double process_var) {
 
       this->iterationTime = vex::timer::system() - lastMillis;
 
       if (abs(setpoint - process_var) < allowedError) {
+        this->isFinished = true;
         return 0.0;
+      }
+      else {
+        this->isFinished = false;
       }
 
       error = setpoint - process_var;
