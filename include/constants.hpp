@@ -32,7 +32,7 @@ const double kRotationAllowedError = 0.001;
 const double kMovementAllowedError = 0.001;
 
 //Catapult
-const int kCatapultPort = 6;
+const int kCatapultPort = 4;
 
 const float kCatapultSpeedMultiplier = 1;
 
@@ -40,8 +40,8 @@ const float kCatapultSpeedMultiplier = 1;
 const int kDriveForwardAutonSpeed = 20;
 
 //Odometry
-const float kOdomGearRatio = 36.0/60.0;
-const float kWheelDiamInches = 3.25;
+const float kOdomGearRatio = 1;//36.0/60.0;
+const float kWheelDiamInches = 4.125;
 const float kOdomSpeedMultiplier = 0.5;
 
 //Gyro

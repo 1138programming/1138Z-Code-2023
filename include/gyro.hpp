@@ -9,7 +9,7 @@ class Gyro {
         Gyro(vex::inertial* gyro) {
             this->gyro = gyro;
         }
-        void reset() {
+        void resetValues() {
             this->gyro->resetHeading();
             this->gyro->resetRotation();
         }
@@ -23,7 +23,7 @@ class Gyro {
         void resetGyro() {
             this->gyro->calibrate();
             while(this->gyro->isCalibrating()) {
-                vex::wait(10, vex::msec);
+                vex::wait(10,vex::msec);
             }
         }
 };
