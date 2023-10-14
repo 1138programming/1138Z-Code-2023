@@ -7,9 +7,16 @@ class Intake {
     vex::motor* intakeMotor;
     bool movingForwards = true;
     bool thisDisabled = false;
+    bool lastVal = false;
     public:
         Intake(vex::motor* intakeMotor) {
             this->intakeMotor = intakeMotor;
+        }
+        void moveWithController(bool local) {
+            if (local == true && local != this->lastVal) {
+                this->toggleDisable();
+            }
+            this->lastVal = local;
         }
         void move(int speed) {
             if (this->thisDisabled) {
@@ -31,7 +38,7 @@ class Intake {
         void enable() {
             this->thisDisabled = false;
         }
-        void disabled() {
+        void disable() {
             this->thisDisabled = true;
         }
         void toggleDisable() {

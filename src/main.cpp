@@ -81,13 +81,13 @@ void autonomous(void) {
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
-  gyroClass.resetGyro();
-  odom.setX(0.0);
-  odom.setY(0.0);
+  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
+  // gyroClass.resetGyro();
+  // odom.setX(0.0);
+  // odom.setY(0.0);
   //odom.turnToPosPID(180.0);
   //robotBase.turn(20);
-  odom.moveInInchesOdomPID(20.0);
+  // odom.moveInInchesOdomPID(20.0);
   //odom.moveInInchesOdom(1.0, 0.1);
   //odom.turnToPosPID(180, 5.0);
   // vex::wait(100, vex::msec);
@@ -124,11 +124,11 @@ void usercontrol(void) {
   // cata 30, 
 
   while (1) {
-    BRAINSCREEN.clearScreen();
-    odom.pollAndUpdateOdom();
-    BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
-    BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
-    BRAINSCREEN.printAt(50,150,"Inches: %lf, thrm: %lf", 5.0, odom.getDisplacement(5.0));
+    // BRAINSCREEN.clearScreen();
+    // odom.pollAndUpdateOdom();
+    // BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
+    // BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
+    // BRAINSCREEN.printAt(50,150,"Inches: %lf, thrm: %lf", 5.0, odom.getDisplacement(5.0));
 
     if (controllerMain.ButtonL1.pressing() && !mainControllerL1LastPressed) {
       driveBaseWings.set(!(driveBaseWings.value()));

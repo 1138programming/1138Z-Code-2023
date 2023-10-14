@@ -16,12 +16,19 @@ const int kIntakeSpeed = 127;
 
 
 //Base
+// const int kBackLeftMotorPort = 10;
+// const int kCenterLeftPort = 11;
+// const int kFrontLeftPort = 12;
+// const int kBackRightMotorPort = 17;
+// const int kCenterRightPort = 18;
+// const int kFrontRightPort = 19;
+
 const int kBackLeftMotorPort = 10;
 const int kCenterLeftPort = 11;
 const int kFrontLeftPort = 12;
-const int kBackRightMotorPort = 17;
-const int kCenterRightPort = 18;
-const int kFrontRightPort = 19;
+const int kBackRightMotorPort = 0;
+const int kCenterRightPort = 1;
+const int kFrontRightPort = 2;
 
 //How fast we turn vs. max speed
 const float kTurningMovementMultiplier = 0.9;
