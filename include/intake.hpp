@@ -8,28 +8,33 @@ class Intake {
     bool movingForwards = true;
     bool thisDisabled = false;
     bool lastVal = false;
+    bool lastFlip = false;
     public:
         Intake(vex::motor* intakeMotor) {
             this->intakeMotor = intakeMotor;
         }
-        void moveWithController(bool local) {
-            if (local == true && local != this->lastVal) {
-                this->toggleDisable();
-            }
+        void moveWithController(bool local, bool flip) {
+            this->enable();
+            // if (local == true && local != this->lastVal) {
+            //     this->toggleDisable();
+            // }
+            // if (flip == true && flip != this->lastFlip) {
+            //     this->toggleDirection();
+            // }
+            move();
             this->lastVal = local;
+            this->lastFlip = flip;
         }
-        void move(int speed) {
+        void move() {
             if (this->thisDisabled) {
-                this->intakeMotor->setVelocity(0, vex::pct);
+                this->intakeMotor->spin(vex::forward, 0, vex::pct);
                 return;
             }
-            speed = speed > 100 ? 100 : speed;
-            speed = speed < 0 ? 0 : speed;
-            if (!this->movingForwards) {
-                this->intakeMotor->setVelocity(100, vex::pct);
+            if (this->movingForwards) {
+                this->intakeMotor->spin(vex::forward, kIntakeSpeed, vex::pct);
             }
-            else if (!this->movingForwards) {
-                this->intakeMotor->setVelocity(-100, vex::pct);
+            else if (!(this->movingForwards)) {
+                this->intakeMotor->spin(vex::forward, -kIntakeSpeed, vex::pct);
             }
         }
         void toggleDirection() {

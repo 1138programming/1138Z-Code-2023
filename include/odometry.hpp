@@ -208,6 +208,31 @@ class Odometry {
                 this->pollAndUpdateOdom();
             }
         }
+            void moveInInchesOdomPIDWithTurn(double inches) {
+            double gyroHeader = this->gyro->getHeading();
+
+            double xMultiplier = this->getXPosMultFromDegreesInRad(gyroHeader);
+            double yMultiplier = this->getYPosMultFromDegInRad(gyroHeader);
+
+            double posToMoveToX = (this->xPos + (inches * xMultiplier));
+            double posToMoveToY = (this->yPos + (inches * yMultiplier));
+
+            double initialPosX = this->xPos;
+            double initialPosY = this->yPos;
+
+            double initialDisplacement = this->pythagoreanTheormBetweenTwoPoints(initialPosX, initialPosY, posToMoveToX, posToMoveToY);
+            double movement = -0.001;
+
+            this->odomMovementPID->setSetpoint(0.0);
+            this->odomTurningPID->setSetpoint(gyroHeader);
+            while (!(this->odomMovementPID->isPIDFinished())) {
+                double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
+                movement = this->odomMovementPID->calculate(inches - difference);
+                this->robotBase->driveBothSides(movement);
+                vex::wait(10,vex::msec);
+                this->pollAndUpdateOdom();
+            }
+        }
         double getDisplacement(double inches) {
             double gyroHeader = this->gyro->getHeading();
 

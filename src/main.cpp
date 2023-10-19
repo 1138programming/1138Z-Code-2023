@@ -27,26 +27,28 @@ vex::brain Brain = vex::brain();
 PID odomTurningPID(0.0, -0.75, 0.0, 0.0, 100.0, -100.0, 0.1);
 PID odomMovementPID(0.0, 20, 0.0, 0.0, 100.0, -100.0, 4.0);
 vex::inertial inertialSensor(kInertialSensorPort);
-// vex::motor bl(kBackLeftMotorPort, true);
-// vex::motor cl(kCenterLeftPort);
-// vex::motor fl(kFrontLeftPort, true);
-// vex::motor br(kBackRightMotorPort, true);
-// vex::motor cr(kCenterRightPort);
-// vex::motor fr(kFrontRightPort);
-vex::motor bl(kBackLeftMotorPort);
-vex::motor cl(kCenterLeftPort);
-vex::motor fl(kFrontLeftPort);
+vex::motor bl(kBackLeftMotorPort, true);
+vex::motor cl(kCenterLeftPort, true);
+vex::motor fl(kFrontLeftPort, true);
 vex::motor br(kBackRightMotorPort, true);
 vex::motor cr(kCenterRightPort, true);
 vex::motor fr(kFrontRightPort, true);
+// vex::motor bl(kBackLeftMotorPort, true);
+// vex::motor cl(kCenterLeftPort);
+// vex::motor fl(kFrontLeftPort);
+// vex::motor br(kBackRightMotorPort);
+// vex::motor cr(kCenterRightPort, true);
+// vex::motor fr(kFrontRightPort, true);
 // user-defined classes
 Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
-Intake intake(new vex::motor(kIntakePort));
-Catapult catapult(new vex::motor(kCatapultPort, true));
+//Intake intake(new vex::motor(kIntakePort));
+vex::motor intake(kIntakePort);
+Catapult catapult(new vex::motor(kCatapultPort));
 Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 vex::brain::lcd BRAINSCREEN;
 Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID);
+vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.A);
 
 // MULTITASKING
 //this should run the task
@@ -63,6 +65,7 @@ Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTur
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
+  driveBaseWings.set(true);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -87,7 +90,7 @@ void autonomous(void) {
   // odom.setY(0.0);
   //odom.turnToPosPID(180.0);
   //robotBase.turn(20);
-  // odom.moveInInchesOdomPID(20.0);
+  odom.moveInInchesOdomPID(20.0);
   //odom.moveInInchesOdom(1.0, 0.1);
   //odom.turnToPosPID(180, 5.0);
   // vex::wait(100, vex::msec);
@@ -117,10 +120,15 @@ void usercontrol(void) {
   // bool pistonVal = false;
 
   vex::controller controllerMain = vex::controller(vex::primary);
-  vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.A);
 
   bool mainControllerR1LastPressed = false;
   bool mainControllerL1LastPressed = false;
+
+  bool intakeReverse = false;
+  bool intakeEnabled = true;
+  
+  bool buttonBLastPressed = false;
+  bool buttonR2LastPressed = false;
   // cata 30, 
 
   while (1) {
@@ -134,6 +142,12 @@ void usercontrol(void) {
       driveBaseWings.set(!(driveBaseWings.value()));
     }
 
+    if (controllerMain.ButtonB.pressing() && !buttonBLastPressed) {
+      intakeEnabled = !intakeEnabled;
+    }
+    if (controllerMain.ButtonR2.pressing() && !buttonR2LastPressed) {
+      intakeReverse = !intakeReverse;
+    }
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
@@ -143,6 +157,19 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
 
+    //intake
+    //intake.moveWithController(controllerMain.ButtonB.pressing(), controllerMain.ButtonR2.pressing());
+    if (intakeEnabled) {
+      if (intakeReverse) {
+        intake.spin(vex::forward, -kIntakeSpeed, vex::pct);
+      }
+      else {
+        intake.spin(vex::forward, kIntakeSpeed, vex::pct);
+      }
+    }
+    else {
+      intake.spin(vex::forward, 0, vex::pct);
+    }
     // code to get the catapult working...
     catapult.moveWithActiveCheck();
     if (controllerMain.ButtonR1.pressing() && !mainControllerR1LastPressed) {
@@ -151,11 +178,14 @@ void usercontrol(void) {
     catapult.initHoldMotor(controllerMain.ButtonA.pressing());
     
     //driver preference.
-    robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
+    robotBase.driveSplitArcade(controllerMain.Axis3.position(), controllerMain.Axis1.position());
 
     // set controller vars. TODO: make these into a class, priority low.
     mainControllerR1LastPressed = controllerMain.ButtonR1.pressing();
     mainControllerL1LastPressed = controllerMain.ButtonL1.pressing();
+
+    buttonBLastPressed = controllerMain.ButtonB.pressing();
+    buttonR2LastPressed = controllerMain.ButtonR2.pressing();
     vex::wait(20, vex::msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }

@@ -10,8 +10,8 @@
 // const int kRightDrivebaseFrontPort = 0;
 
 //Intake
-const int kIntakePort = 18;
-const int kIntakeSpeed = 127;
+const int kIntakePort = 8;
+const int kIntakeSpeed = 100;
 
 
 
@@ -23,17 +23,17 @@ const int kIntakeSpeed = 127;
 // const int kCenterRightPort = 18;
 // const int kFrontRightPort = 19;
 
-const int kBackLeftMotorPort = 10;
-const int kCenterLeftPort = 11;
-const int kFrontLeftPort = 12;
-const int kBackRightMotorPort = 0;
-const int kCenterRightPort = 1;
-const int kFrontRightPort = 2;
+const int kBackLeftMotorPort = 5;
+const int kCenterLeftPort = 4;
+const int kFrontLeftPort = 3;
+const int kBackRightMotorPort = 19;
+const int kCenterRightPort = 17;
+const int kFrontRightPort = 15;
 
 //How fast we turn vs. max speed
-const float kTurningMovementMultiplier = 0.9;
+const float kTurningMovementMultiplier = 0.9601;
 // How fast of max speed we actually move
-const float kMovementSpeedMultiplier = 0.9;
+const float kMovementSpeedMultiplier = 0.9601;
 
 const double kRotationAllowedError = 0.001;
 const double kMovementAllowedError = 0.001;
@@ -41,7 +41,7 @@ const double kMovementAllowedError = 0.001;
 //Catapult
 const int kCatapultPort = 4;
 
-const float kCatapultSpeedMultiplier = 1;
+const float kCatapultSpeedMultiplier = 0.75;
 
 //Auton
 const int kDriveForwardAutonSpeed = 20;
@@ -52,5 +52,5 @@ const float kWheelDiamInches = 4.125;
 const float kOdomSpeedMultiplier = 0.5;
 
 //Gyro
-const int kInertialSensorPort = 13;
+const int kInertialSensorPort = 10;
 #endif

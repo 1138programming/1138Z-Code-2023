@@ -84,10 +84,12 @@ class Base {
             return (getAverageLeftRot() + getAverageRightRot())/2;
         }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
+            //89
             leftJoystickYVal = (int)(((float)leftJoystickYVal) * kMovementSpeedMultiplier);
             rightJoystickXVal = (int)(((float)rightJoystickXVal) * kTurningMovementMultiplier);
-            int leftControl = (int)(rightJoystickXVal + leftJoystickYVal); // speed + turn
-            int rightControl = (int)(rightJoystickXVal - leftJoystickYVal); // speed - turn
+
+            int leftControl = (int)(leftJoystickYVal - rightJoystickXVal); // speed - turn
+            int rightControl = (int)(leftJoystickYVal + rightJoystickXVal); // speed + turn
             // __above = getting values for controlling split arcade (no clue how it works, google it IG)__
             moveRightMotors(rightControl);
             moveLeftMotors(leftControl);
