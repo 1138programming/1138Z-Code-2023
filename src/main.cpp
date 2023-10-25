@@ -25,17 +25,17 @@ competition Competition;
 vex::brain Brain = vex::brain();
 // define your global instances of motors and other devices here
 PID odomTurningPID(0.0, -0.75, 0.0, 0.0, 100.0, -100.0, 0.1);
-PID odomMovementPID(0.0, 20, 0.0, 0.0, 100.0, -100.0, 4.0);
+PID odomMovementPID(0.0, 80, 0.0, 0.0, 100.0, -100.0, 0.1);
 vex::inertial inertialSensor(kInertialSensorPort);
 vex::motor bl(kBackLeftMotorPort, true);
-vex::motor cl(kCenterLeftPort, true);
-vex::motor fl(kFrontLeftPort, true);
+vex::motor cl(kCenterLeftPort);
+vex::motor fl(kFrontLeftPort);
 vex::motor br(kBackRightMotorPort, true);
-vex::motor cr(kCenterRightPort, true);
-vex::motor fr(kFrontRightPort, true);
-// vex::motor bl(kBackLeftMotorPort, true);
-// vex::motor cl(kCenterLeftPort);
-// vex::motor fl(kFrontLeftPort);
+vex::motor cr(kCenterRightPort);
+vex::motor fr(kFrontRightPort);
+// vex::motor bl(kBackLeftMotorPort);
+// vex::motor cl(kCenterLeftPort, true);
+// vex::motor fl(kFrontLeftPort, true);
 // vex::motor br(kBackRightMotorPort);
 // vex::motor cr(kCenterRightPort, true);
 // vex::motor fr(kFrontRightPort, true);
@@ -81,16 +81,17 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+  robotBase.resetMotorEncoders();
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
+  //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
   // gyroClass.resetGyro();
   // odom.setX(0.0);
   // odom.setY(0.0);
   //odom.turnToPosPID(180.0);
   //robotBase.turn(20);
-  odom.moveInInchesOdomPID(20.0);
+  odom.moveInInchesOdomPID(2.0);
   //odom.moveInInchesOdom(1.0, 0.1);
   //odom.turnToPosPID(180, 5.0);
   // vex::wait(100, vex::msec);
@@ -134,9 +135,9 @@ void usercontrol(void) {
   while (1) {
     // BRAINSCREEN.clearScreen();
     // odom.pollAndUpdateOdom();
-    // BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
-    // BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
-    // BRAINSCREEN.printAt(50,150,"Inches: %lf, thrm: %lf", 5.0, odom.getDisplacement(5.0));
+    BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
+    BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
+    BRAINSCREEN.printAt(50,150,"Inches: %lf, thrm: %lf", 5.0, odom.getDisplacement(5.0));
 
     if (controllerMain.ButtonL1.pressing() && !mainControllerL1LastPressed) {
       driveBaseWings.set(!(driveBaseWings.value()));
@@ -178,7 +179,7 @@ void usercontrol(void) {
     catapult.initHoldMotor(controllerMain.ButtonA.pressing());
     
     //driver preference.
-    robotBase.driveSplitArcade(controllerMain.Axis3.position(), controllerMain.Axis1.position());
+    robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
 
     // set controller vars. TODO: make these into a class, priority low.
     mainControllerR1LastPressed = controllerMain.ButtonR1.pressing();

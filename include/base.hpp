@@ -65,7 +65,7 @@ class Base {
         }
         void driveBothSides(int movement) {
             moveLeftMotors(movement);
-            moveRightMotors(movement);
+            moveRightMotors(-movement);
         }
         void stop() {
             moveLeftMotors(0);
@@ -83,13 +83,21 @@ class Base {
         double getAverageRotationBothSides() {
             return (getAverageLeftRot() + getAverageRightRot())/2;
         }
+        void resetMotorEncoders() {
+            this->leftBackMotor->resetPosition();
+            this->leftCenterMotor->resetPosition();
+            this->leftFrontMotor->resetPosition();
+            this->rightBackMotor->resetPosition();
+            this->rightCenterMotor->resetPosition();
+            this->rightFrontMotor->resetPosition();
+        }
         void driveSplitArcade(int leftJoystickYVal, int rightJoystickXVal) {
             //89
-            leftJoystickYVal = (int)(((float)leftJoystickYVal) * kMovementSpeedMultiplier);
-            rightJoystickXVal = (int)(((float)rightJoystickXVal) * kTurningMovementMultiplier);
+            leftJoystickYVal = -(int)(((float)leftJoystickYVal) * kMovementSpeedMultiplier);
+            rightJoystickXVal = -(int)(((float)rightJoystickXVal) * kTurningMovementMultiplier);
 
-            int leftControl = (int)(leftJoystickYVal - rightJoystickXVal); // speed - turn
-            int rightControl = (int)(leftJoystickYVal + rightJoystickXVal); // speed + turn
+            int leftControl = (int)(leftJoystickYVal + rightJoystickXVal); // speed - turn
+            int rightControl = (int)(leftJoystickYVal - rightJoystickXVal); // speed + turn
             // __above = getting values for controlling split arcade (no clue how it works, google it IG)__
             moveRightMotors(rightControl);
             moveLeftMotors(leftControl);

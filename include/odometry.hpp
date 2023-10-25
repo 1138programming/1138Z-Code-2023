@@ -23,6 +23,14 @@ class Odometry {
     //const Base* == the base is const; Base* const == the pointer is const; const Base* const == both.
     // the odometry class should NEVER change Base, but we can't garuentee that, as we have to access the functions in base. BE CAREFUL!
     private:
+        int roundD(double num) {
+            if (num < 0) {
+                return (int)(num-0.5);
+            }
+            else {
+                return (int)(num+0.5);
+            }
+        }
         double absD(double num) {
             return num < 0;
         }
@@ -158,32 +166,56 @@ class Odometry {
             }
             this->robotBase->stop();
         }
-        void moveInInchesOdom(double inches, double allowedError) {
-            double gyroHeader = this->gyro->getHeading();
-            double xMultiplier = this->getXPosMultFromDegreesInRad(gyroHeader);
-            double yMultiplier = this->getYPosMultFromDegInRad(gyroHeader);
-            double posToMoveToX = (this->xPos + (this->getActualPosFromWheelRot(inches) * xMultiplier));
-            double posToMoveToY = (this->yPos + (this->getActualPosFromWheelRot(inches) * yMultiplier));
-            double initialPosX = this->xPos;
-            double initialPosY = this->yPos;
+        // void moveInInchesOdom(double inches, double allowedError) {
+        //     double gyroHeader = this->gyro->getHeading();
+        //     double xMultiplier = this->getXPosMultFromDegreesInRad(gyroHeader);
+        //     double yMultiplier = this->getYPosMultFromDegInRad(gyroHeader);
+        //     double posToMoveToX = (this->xPos + (this->getActualPosFromWheelRot(inches) * xMultiplier));
+        //     double posToMoveToY = (this->yPos + (this->getActualPosFromWheelRot(inches) * yMultiplier));
+        //     double initialPosX = this->xPos;
+        //     double initialPosY = this->yPos;
 
-            double initialDisplacement = this->pythagoreanTheormBetweenTwoPoints(initialPosX, initialPosY, posToMoveToX, posToMoveToY);
-            //this->doubleIsWithinMarginOfError()
-            // don't bother trying to read this, takes the most different pos and does the loop while that happens.
-            while(this->doubleIsWithinMarginOfError((this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY)-initialDisplacement), 0.0, allowedError)) { //!(this->doubleIsWithinMarginOfError(this->xPos, posToMoveToX, allowedError))) { //!(xDifferenceGreater ? this->doubleIsWithinMarginOfError(this->xPos, posToMoveToX, allowedError) : this->doubleIsWithinMarginOfError(this->yPos, posToMoveToY, allowedError))) {
-                double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosX))-initialDisplacement;
-                if (difference >= 0) {
-                    // greater than or equal to
-                    this->robotBase->driveBothSides(20);
-                }
-                else {
-                    this->robotBase->driveBothSides(-20);
-                }
-                vex::wait(10,vex::msec);
-                this->pollAndUpdateOdom();
-            }
-        }
-        // TBD
+        //     double initialDisplacement = this->pythagoreanTheormBetweenTwoPoints(initialPosX, initialPosY, posToMoveToX, posToMoveToY);
+        //     //this->doubleIsWithinMarginOfError()
+        //     // don't bother trying to read this, takes the most different pos and does the loop while that happens.
+        //     while(this->doubleIsWithinMarginOfError((this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY)-initialDisplacement), 0.0, allowedError)) { //!(this->doubleIsWithinMarginOfError(this->xPos, posToMoveToX, allowedError))) { //!(xDifferenceGreater ? this->doubleIsWithinMarginOfError(this->xPos, posToMoveToX, allowedError) : this->doubleIsWithinMarginOfError(this->yPos, posToMoveToY, allowedError))) {
+        //         double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosX))-initialDisplacement;
+        //         if (difference >= 0) {
+        //             // greater than or equal to
+        //             this->robotBase->driveBothSides(20);
+        //         }
+        //         else {
+        //             this->robotBase->driveBothSides(-20);
+        //         }
+        //         vex::wait(10,vex::msec);
+        //         this->pollAndUpdateOdom();
+        //     }
+        // }
+        // // TBD
+        // void moveInInchesOdomPID(double inches) {
+        //     double gyroHeader = this->gyro->getHeading();
+
+        //     double xMultiplier = this->getXPosMultFromDegreesInRad(gyroHeader);
+        //     double yMultiplier = this->getYPosMultFromDegInRad(gyroHeader);
+
+        //     double posToMoveToX = (this->xPos + (inches * xMultiplier));
+        //     double posToMoveToY = (this->yPos + (inches * yMultiplier));
+
+        //     double initialPosX = this->xPos;
+        //     double initialPosY = this->yPos;
+
+        //     double initialDisplacement = this->pythagoreanTheormBetweenTwoPoints(initialPosX, initialPosY, posToMoveToX, posToMoveToY);
+        //     double movement = -0.001;
+
+        //     this->odomMovementPID->setSetpoint(0.0);
+        //     while (!(this->odomMovementPID->isPIDFinished())) {
+        //         double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
+        //         movement = this->odomMovementPID->calculate(inches - difference);
+        //         this->robotBase->driveBothSides(roundD(movement));
+        //         vex::wait(10,vex::msec);
+        //         this->pollAndUpdateOdom();
+        //     }
+        // }
         void moveInInchesOdomPID(double inches) {
             double gyroHeader = this->gyro->getHeading();
 
@@ -197,18 +229,28 @@ class Odometry {
             double initialPosY = this->yPos;
 
             double initialDisplacement = this->pythagoreanTheormBetweenTwoPoints(initialPosX, initialPosY, posToMoveToX, posToMoveToY);
-            double movement = -0.001;
+            double movement = -20.0;
 
             this->odomMovementPID->setSetpoint(0.0);
-            while (!(this->odomMovementPID->isPIDFinished())) {
-                double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
-                movement = this->odomMovementPID->calculate(inches - difference);
-                this->robotBase->driveBothSides(movement);
+            //this->odomTurningPID->setSetpoint(gyroHeader);
+            if (inches < 0) {
+                this->robotBase->driveBothSides(-roundD(movement));
+            }
+            else {
+                this->robotBase->driveBothSides(roundD(movement));
+            }
+
+            do {
                 vex::wait(10,vex::msec);
                 this->pollAndUpdateOdom();
+                double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
+                movement = this->odomMovementPID->calculate(inches - difference);
+                this->robotBase->driveBothSides((int)movement);
             }
+            while (!(this->odomMovementPID->isPIDFinished()));
         }
-            void moveInInchesOdomPIDWithTurn(double inches) {
+
+        void moveInInchesOdomPIDWithTurn(double inches) {
             double gyroHeader = this->gyro->getHeading();
 
             double xMultiplier = this->getXPosMultFromDegreesInRad(gyroHeader);
@@ -221,18 +263,25 @@ class Odometry {
             double initialPosY = this->yPos;
 
             double initialDisplacement = this->pythagoreanTheormBetweenTwoPoints(initialPosX, initialPosY, posToMoveToX, posToMoveToY);
-            double movement = -0.001;
+            double movement = -20.0;
 
             this->odomMovementPID->setSetpoint(0.0);
             this->odomTurningPID->setSetpoint(gyroHeader);
-            while (!(this->odomMovementPID->isPIDFinished())) {
-                double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
-                movement = this->odomMovementPID->calculate(inches - difference);
-                this->robotBase->driveBothSides(movement);
+
+            do {
                 vex::wait(10,vex::msec);
                 this->pollAndUpdateOdom();
+                double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
+                movement = this->odomMovementPID->calculate(inches - difference);
+                this->robotBase->driveBothSides((int)movement);
+                double turnMovement = this->odomTurningPID->calculate(this->gyro->getHeading());
+                if (!doubleIsWithinMarginOfError(gyroHeader, absD(this->gyro->getHeading()-gyroHeader), 2.5)) {
+                    this->robotBase->turn(turnMovement);
+                }
             }
+            while (!(this->odomMovementPID->isPIDFinished()));
         }
+
         double getDisplacement(double inches) {
             double gyroHeader = this->gyro->getHeading();
 
