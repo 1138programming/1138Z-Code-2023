@@ -47,7 +47,7 @@ Catapult catapult(new vex::motor(kCatapultPort));
 Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 vex::brain::lcd BRAINSCREEN;
-Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID);
+Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID, 0.56912f);
 vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.A);
 
 // MULTITASKING
@@ -91,7 +91,10 @@ void autonomous(void) {
   // odom.setY(0.0);
   //odom.turnToPosPID(180.0);
   //robotBase.turn(20);
-  odom.moveInInchesOdomPID(2.0);
+  //odom.moveInInchesOdomPID(2.0);
+  odom.moveInFeetOdomPIDWithTurn(2.0f);
+  odom.turnToPosPID(270.0, 0.5);
+  odom.moveInFeetOdomPIDWithTurn(1.5f);
   //odom.moveInInchesOdom(1.0, 0.1);
   //odom.turnToPosPID(180, 5.0);
   // vex::wait(100, vex::msec);
