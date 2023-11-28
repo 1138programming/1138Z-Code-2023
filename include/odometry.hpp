@@ -281,7 +281,7 @@ class Odometry {
                     turnToPosPID(initialGyroHeader, 0.5);
                 }
             }
-            while(!this->doubleIsWithinMarginOfError(difference, initialDisplacement, 0.5));
+            while(this->doubleIsWithinMarginOfError(movement, 0.1, 0.05));
             //while (!(this->odomMovementPID->isPIDFinished() && this->odomTurningPID->isPIDFinished()));
         }
 

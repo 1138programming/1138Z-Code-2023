@@ -29,6 +29,7 @@ const int kFrontLeftPort = 2;
 const int kBackRightMotorPort = 10;
 const int kCenterRightPort = 11;
 const int kFrontRightPort = 12;
+const int kHangMotor = 0;
 
 //How fast we turn vs. max speed
 const float kTurningMovementMultiplier = 0.9501;

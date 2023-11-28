@@ -16,6 +16,7 @@
 #include "intake.hpp"
 #include "odometry.hpp"
 #include "gyro.hpp"
+#include "hang.hpp"
 //pleaseplease show up on github
 
 using namespace vex;
@@ -43,7 +44,9 @@ vex::motor fr(kFrontRightPort);
 Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
 //Intake intake(new vex::motor(kIntakePort));
 vex::motor intake(kIntakePort);
+vex::motor hangMotor(kHangMotor);
 Catapult catapult(new vex::motor(kCatapultPort));
+Hang hang();
 Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 vex::brain::lcd BRAINSCREEN;
