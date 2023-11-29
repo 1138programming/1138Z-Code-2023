@@ -28,11 +28,11 @@ vex::brain Brain = vex::brain();
 PID odomTurningPID(0.0, -0.75, 0.0, 0.0, 100.0, -100.0, 0.1);
 PID odomMovementPID(0.0, 80, 0.0, 0.0, 100.0, -100.0, 0.1);
 vex::inertial inertialSensor(kInertialSensorPort);
-vex::motor bl(kBackLeftMotorPort, true);
+vex::motor bl(kBackLeftMotorPort);
 vex::motor cl(kCenterLeftPort);
-vex::motor fl(kFrontLeftPort);
+vex::motor fl(kFrontLeftPort, true);
 vex::motor br(kBackRightMotorPort, true);
-vex::motor cr(kCenterRightPort);
+vex::motor cr(kCenterRightPort, true);
 vex::motor fr(kFrontRightPort);
 // vex::motor bl(kBackLeftMotorPort);
 // vex::motor cl(kCenterLeftPort, true);
@@ -43,15 +43,16 @@ vex::motor fr(kFrontRightPort);
 // user-defined classes
 Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
 //Intake intake(new vex::motor(kIntakePort));
-vex::motor intake(kIntakePort);
+vex::motor intake(kIntakePort, true);
 vex::motor hangMotor(kHangMotor);
-Catapult catapult(new vex::motor(kCatapultPort));
+Catapult catapult(new vex::motor(kCatapultPort, true));
 Hang hang();
 Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 vex::brain::lcd BRAINSCREEN;
 Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID, 0.56912f);
 vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.A);
+double gamerJuice = 0.69;
 
 // MULTITASKING
 //this should run the task
@@ -68,6 +69,7 @@ vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.A);
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
+  gyroClass.resetGyro();
   driveBaseWings.set(true);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
@@ -95,9 +97,9 @@ void autonomous(void) {
   //odom.turnToPosPID(180.0);
   //robotBase.turn(20);
   //odom.moveInInchesOdomPID(2.0);
-  odom.moveInFeetOdomPIDWithTurn(2.0f);
+  odom.moveInFeetOdomPIDWithTurn(2.0f, &gamerJuice);
   odom.turnToPosPID(270.0, 0.5);
-  odom.moveInFeetOdomPIDWithTurn(1.5f);
+  odom.moveInFeetOdomPIDWithTurn(1.5f, &gamerJuice);
   //odom.moveInInchesOdom(1.0, 0.1);
   //odom.turnToPosPID(180, 5.0);
   // vex::wait(100, vex::msec);
@@ -118,7 +120,6 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  gyroClass.resetGyro();
   // not nearly as necessary in driverControl.
   // User control code here, inside the loop
   // bool R1LastPressed = false;
@@ -129,30 +130,29 @@ void usercontrol(void) {
   vex::controller controllerMain = vex::controller(vex::primary);
 
   bool mainControllerR1LastPressed = false;
-  bool mainControllerL1LastPressed = false;
 
   bool intakeReverse = false;
   bool intakeEnabled = true;
   
-  bool buttonBLastPressed = false;
-  bool buttonR2LastPressed = false;
+  bool buttonL1LastPressed = false;
+  bool buttonL2LastPressed = false;
   // cata 30, 
 
   while (1) {
-    // BRAINSCREEN.clearScreen();
+    BRAINSCREEN.clearScreen();
     // odom.pollAndUpdateOdom();
     BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
     BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
-    BRAINSCREEN.printAt(50,150,"Inches: %lf, thrm: %lf", 5.0, odom.getDisplacement(5.0));
+    BRAINSCREEN.printAt(50,150,"Dist: %lf", gamerJuice);
 
-    if (controllerMain.ButtonL1.pressing() && !mainControllerL1LastPressed) {
-      driveBaseWings.set(!(driveBaseWings.value()));
+    if (controllerMain.ButtonB.pressing()) {
+
     }
 
-    if (controllerMain.ButtonB.pressing() && !buttonBLastPressed) {
+    if (controllerMain.ButtonL1.pressing() && !buttonL1LastPressed) {
       intakeEnabled = !intakeEnabled;
     }
-    if (controllerMain.ButtonR2.pressing() && !buttonR2LastPressed) {
+    if (controllerMain.ButtonL2.pressing() && !buttonL2LastPressed) {
       intakeReverse = !intakeReverse;
     }
     // This is the main execution loop for the user control program.
@@ -185,14 +185,13 @@ void usercontrol(void) {
     catapult.initHoldMotor(controllerMain.ButtonA.pressing());
     
     //driver preference.
-    robotBase.driveSplitArcade(controllerMain.Axis1.position(), controllerMain.Axis3.position());
+    robotBase.driveSplitArcade(controllerMain.Axis3.position(), controllerMain.Axis1.position());
 
     // set controller vars. TODO: make these into a class, priority low.
     mainControllerR1LastPressed = controllerMain.ButtonR1.pressing();
-    mainControllerL1LastPressed = controllerMain.ButtonL1.pressing();
 
-    buttonBLastPressed = controllerMain.ButtonB.pressing();
-    buttonR2LastPressed = controllerMain.ButtonR2.pressing();
+    buttonL1LastPressed = controllerMain.ButtonL1.pressing();
+    buttonL2LastPressed = controllerMain.ButtonL2.pressing();
     vex::wait(20, vex::msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }

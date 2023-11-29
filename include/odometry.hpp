@@ -252,7 +252,7 @@ class Odometry {
             while (!(this->odomMovementPID->isPIDFinished()));
         }
 
-        void moveInFeetOdomPIDWithTurn(double feet) {
+        void moveInFeetOdomPIDWithTurn(double feet, double* distanceTwo) {
             feet = feet * this->feetMultiplier;
             double initialGyroHeader = this->gyro->getHeading();
 
@@ -275,6 +275,7 @@ class Odometry {
                 vex::wait(10,vex::msec);
                 this->pollAndUpdateOdom();
                 difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
+                *distanceTwo = difference;
                 movement = this->odomMovementPID->calculate(feet - difference);
                 this->robotBase->driveBothSides((int)movement);
                 if (!doubleIsWithinMarginOfError(initialGyroHeader, absD(this->gyro->getHeading()-initialGyroHeader), 1.0)) {

@@ -65,7 +65,7 @@ class Base {
         }
         void driveBothSides(int movement) {
             moveLeftMotors(movement);
-            moveRightMotors(-movement);
+            moveRightMotors(movement);
         }
         void stop() {
             moveLeftMotors(0);
