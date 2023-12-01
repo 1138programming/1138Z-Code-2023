@@ -26,8 +26,13 @@ class PID {
     std::uint32_t iterationTime = 0;
     std::uint32_t lastMillis = 1;
 
-    double abs(double num) {
-        return num < 0 ? -num : num;
+    bool doubleWithinMarginOfError(double num, double target, double margin) {
+        double min = target - (margin / 2.0);
+        double max = target + (margin / 2.0);
+        return num >= min && num <= max;
+    }
+    double absD(double val) {
+      return val < 0 ? -val : val;
     }
 
   public:
@@ -44,25 +49,30 @@ class PID {
 
     void setSetpoint(double setpoint) {
       this->setpoint = setpoint;
+      this->isFinished = false;
+    }
+    void setAllowedError(double allowedError) {
+      this->allowedError = allowedError;
+      this->isFinished = false;
     }
 
     bool isPIDFinished() {
-      return this->isFinished;
+      return (this->isFinished) == true;
     }
 
     double calculate(double process_var) {
+      if (this->isFinished) {
+        return 0;
+      }
 
       this->iterationTime = vex::timer::system() - lastMillis;
 
-      if (abs(setpoint - process_var) < allowedError) {
+      if (doubleWithinMarginOfError(process_var, this->setpoint, this->allowedError)) {
         this->isFinished = true;
         return 0.0;
       }
-      else {
-        this->isFinished = false;
-      }
 
-      error = setpoint - process_var;
+      error = absD(setpoint - process_var);
 
       double integral = previousIntegral + error * iterationTime;
       double derivative = (error - previousError) / iterationTime;
@@ -72,12 +82,12 @@ class PID {
       this->previousError = error;
       this->previousIntegral = integral;
 
-      // if (output > outputMax) {
-      //   return outputMax;
-      // }
-      // else if (output < outputMin) {
-      //   return outputMin;
-      // }
+      if (output > outputMax) {
+        return outputMax;
+      }
+      else if (output < outputMin) {
+        return outputMin;
+      }
       
       this->lastMillis = vex::timer::system();
 

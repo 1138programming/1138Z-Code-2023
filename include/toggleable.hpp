@@ -22,6 +22,6 @@ class Toggleable {
         bool isPressed() {
             return (this->lastToggled == false && this->toggled == true);
         }
-}
+};
 
 #endif

@@ -25,8 +25,8 @@ using namespace vex;
 competition Competition;
 vex::brain Brain = vex::brain();
 // define your global instances of motors and other devices here
-PID odomTurningPID(0.0, -0.75, 0.0, 0.0, 100.0, -100.0, 0.1);
-PID odomMovementPID(0.0, 80, 0.0, 0.0, 100.0, -100.0, 0.1);
+PID odomTurningPID(0.0, 0.5, 0.0, 0.0, 100.0, -100.0, 0.1);
+PID odomMovementPID(0.0, -40, 0.0, 0.0, 100.0, -100.0, 0.1);
 vex::inertial inertialSensor(kInertialSensorPort);
 vex::motor bl(kBackLeftMotorPort);
 vex::motor cl(kCenterLeftPort);
@@ -34,12 +34,6 @@ vex::motor fl(kFrontLeftPort, true);
 vex::motor br(kBackRightMotorPort, true);
 vex::motor cr(kCenterRightPort, true);
 vex::motor fr(kFrontRightPort);
-// vex::motor bl(kBackLeftMotorPort);
-// vex::motor cl(kCenterLeftPort, true);
-// vex::motor fl(kFrontLeftPort, true);
-// vex::motor br(kBackRightMotorPort);
-// vex::motor cr(kCenterRightPort, true);
-// vex::motor fr(kFrontRightPort, true);
 // user-defined classes
 Base robotBase(&bl, &cl, &fl, &br, &cr, &fr);
 //Intake intake(new vex::motor(kIntakePort));
@@ -50,9 +44,11 @@ Hang hang();
 Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 vex::brain::lcd BRAINSCREEN;
-Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID, 0.56912f);
+Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID, 1.213369);
 vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.A);
-double gamerJuice = 0.69;
+Hang* robotHang = new Hang();
+double final = 0.0;
+double goal = 0.0;
 
 // MULTITASKING
 //this should run the task
@@ -69,8 +65,6 @@ double gamerJuice = 0.69;
 /*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-  gyroClass.resetGyro();
-  driveBaseWings.set(true);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -86,27 +80,16 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+  gyroClass.resetGyro();
   robotBase.resetMotorEncoders();
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
-  //autons.driveForwardForSpecifiedTimeAndPercent(2.0, 0.5);
-  // gyroClass.resetGyro();
-  // odom.setX(0.0);
-  // odom.setY(0.0);
-  //odom.turnToPosPID(180.0);
-  //robotBase.turn(20);
-  //odom.moveInInchesOdomPID(2.0);
-  odom.moveInFeetOdomPIDWithTurn(2.0f, &gamerJuice);
-  odom.turnToPosPID(270.0, 0.5);
-  odom.moveInFeetOdomPIDWithTurn(1.5f, &gamerJuice);
-  //odom.moveInInchesOdom(1.0, 0.1);
-  //odom.turnToPosPID(180, 5.0);
-  // vex::wait(100, vex::msec);
-  // odom.turnToPosPID(90, 5.0);
-  // vex::wait(100, vex::msec);
-  // odom.turnToPosPID(270, 5.0);
-  //odom.moveInInchesOdom(1.0, 1.1);
+
+  odom.moveInFeetOdomPID(6.0f);
+  odom.turnToPosPID(180.0, 2.0);
+  odom.moveInFeetOdomPID(6.0f);
+  odom.turnToPosPID(180.0, 0.5);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -143,11 +126,7 @@ void usercontrol(void) {
     // odom.pollAndUpdateOdom();
     BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
     BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
-    BRAINSCREEN.printAt(50,150,"Dist: %lf", gamerJuice);
-
-    if (controllerMain.ButtonB.pressing()) {
-
-    }
+    BRAINSCREEN.printAt(50,150,"Final: %lf", final);
 
     if (controllerMain.ButtonL1.pressing() && !buttonL1LastPressed) {
       intakeEnabled = !intakeEnabled;
@@ -155,6 +134,7 @@ void usercontrol(void) {
     if (controllerMain.ButtonL2.pressing() && !buttonL2LastPressed) {
       intakeReverse = !intakeReverse;
     }
+    robotHang->update(controllerMain.ButtonB.pressing());
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.

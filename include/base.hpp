@@ -106,6 +106,9 @@ class Base {
             moveLeftMotors(-movement);
             moveRightMotors(movement);
         }
+        bool motorsMoving() {
+            return this->leftBackMotor->isSpinning() || this->leftFrontMotor->isSpinning();
+        }
         // void setBrakeMode(vex::brakeType brakingMode) {
         //     switch (brakingMode)
         //     {
