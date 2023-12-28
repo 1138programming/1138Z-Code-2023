@@ -42,7 +42,7 @@ const double kMovementAllowedError = 0.001;
 //Catapult
 const int kCatapultPort = 9;
 
-const float kCatapultSpeedMultiplier = 0.75;
+const float kCatapultSpeedMultiplier = 0.3750f;
 
 //Auton
 const int kDriveForwardAutonSpeed = 20;

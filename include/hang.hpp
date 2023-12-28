@@ -6,7 +6,7 @@
 
 class Hang : public Toggleable {
     private:
-        vex::digital_out hagPiston = (new vex::brain())->ThreeWirePort.A;
+        vex::digital_out hagPiston = (new vex::brain())->ThreeWirePort.G;
     public:
         void update(bool updateVal) {
             this->lastToggled = toggled;

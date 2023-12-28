@@ -168,7 +168,7 @@ class Odometry {
                 this->pollAndUpdateOdom();
                 double PIDVal = this->odomTurningPID->calculate(this->gyro->getHeading());
                 this->robotBase->turn(PIDVal);
-                if((int)PIDVal == 0) {
+                if((int)(PIDVal) == 0) {
                     break;
                 }
             }

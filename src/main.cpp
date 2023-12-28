@@ -17,6 +17,7 @@
 #include "odometry.hpp"
 #include "gyro.hpp"
 #include "hang.hpp"
+#include "timer.hpp"
 //pleaseplease show up on github
 
 using namespace vex;
@@ -26,7 +27,7 @@ competition Competition;
 vex::brain Brain = vex::brain();
 // define your global instances of motors and other devices here
 PID odomTurningPID(0.0, 0.5, 0.0, 0.0, 100.0, -100.0, 0.1);
-PID odomMovementPID(0.0, -40, 0.0, 0.0, 100.0, -100.0, 0.1);
+PID odomMovementPID(0.0, -20, 0.0, 0.0, 100.0, -100.0, 0.1);
 vex::inertial inertialSensor(kInertialSensorPort);
 vex::motor bl(kBackLeftMotorPort);
 vex::motor cl(kCenterLeftPort);
@@ -45,10 +46,11 @@ Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 vex::brain::lcd BRAINSCREEN;
 Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID, 1.213369);
-vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.A);
+vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.H);
 Hang* robotHang = new Hang();
 double final = 0.0;
 double goal = 0.0;
+Timer* vexSkillsCataTimer = new Timer();
 
 // MULTITASKING
 //this should run the task
@@ -86,10 +88,12 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
 
-  odom.moveInFeetOdomPID(6.0f);
-  odom.turnToPosPID(180.0, 2.0);
-  odom.moveInFeetOdomPID(6.0f);
-  odom.turnToPosPID(180.0, 0.5);
+  odom.moveInFeetOdomPID(8.0f);
+  autons.driveBackwardForSpecifiedTimeAndPercent(1.5, -0.4);
+  // odom.turnToPosPID(180.0, 2.0);
+  // odom.moveInFeetOdomPID(3.0f);
+  // odom.turnToPosPID(180.0, 0.5);
+  // odom.moveInFeetOdomPID(6.0f);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -119,6 +123,9 @@ void usercontrol(void) {
   
   bool buttonL1LastPressed = false;
   bool buttonL2LastPressed = false;
+
+  bool buttonUpLastPressed = false;
+  bool buttonDownLastPressed = false;
   // cata 30, 
 
   while (1) {
@@ -127,6 +134,14 @@ void usercontrol(void) {
     BRAINSCREEN.printAt(50,50,"X: %lf Y: %lf; ROT: %lf", odom.getX(), odom.getY(), gyroClass.getHeading());
     BRAINSCREEN.printAt(50,100,"lastX: %lf, lastY: %lf", odom.getLastXChange(), odom.getLastYChange());
     BRAINSCREEN.printAt(50,150,"Final: %lf", final);
+
+    if (controllerMain.ButtonUp.pressing() && !buttonUpLastPressed) {
+      driveBaseWings.set(true);
+    }
+    if (controllerMain.ButtonDown.pressing() && !buttonDownLastPressed) {
+      driveBaseWings.set(false);
+    }
+
 
     if (controllerMain.ButtonL1.pressing() && !buttonL1LastPressed) {
       intakeEnabled = !intakeEnabled;
@@ -172,6 +187,8 @@ void usercontrol(void) {
 
     buttonL1LastPressed = controllerMain.ButtonL1.pressing();
     buttonL2LastPressed = controllerMain.ButtonL2.pressing();
+    buttonDownLastPressed = controllerMain.ButtonDown.pressing();
+    buttonUpLastPressed = controllerMain.ButtonUp.pressing();
     vex::wait(20, vex::msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
