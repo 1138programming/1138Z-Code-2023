@@ -158,7 +158,7 @@ class Odometry {
             //     this->robotBase->turn(5);
             // }
         }
-        void  turnToPosPID(double targetPosition, double allowedError) {
+        void turnToPosPID(double targetPosition, double allowedError) {
             double actualTarget = this->gyro->getRot() + targetPosition;
             this->odomTurningPID->setSetpoint(targetPosition);
             this->odomMovementPID->setAllowedError(allowedError);
@@ -166,6 +166,51 @@ class Odometry {
             while (!(this->odomTurningPID->isPIDFinished())) {
                 vex::wait(10,vex::msec);
                 this->pollAndUpdateOdom();
+                double PIDVal = this->odomTurningPID->calculate(this->gyro->getHeading());
+                this->robotBase->turn(PIDVal);
+                if((int)(PIDVal) == 0) {
+                    break;
+                }
+            }
+            this->robotBase->stop();
+            // checl
+        }
+        void turnToPosPIDNo360(double targetPosition, double allowedError, bool negative) {
+            double actualTarget = this->gyro->getRot() + targetPosition;
+            this->odomTurningPID->setSetpoint(targetPosition);
+            this->odomMovementPID->setAllowedError(allowedError);
+            //!(this->doubleIsWithinMarginOfError(this->gyro->getRot(),targetPosition,1))
+            while (!(this->odomTurningPID->isPIDFinished())) {
+                vex::wait(10,vex::msec);
+                this->pollAndUpdateOdom();
+                double PIDVal = this->odomTurningPID->calculate(this->gyro->getHeading());
+                if (negative) {
+                    if (PIDVal > 0) {
+                        PIDVal = -PIDVal;
+                    }
+                }
+                else {
+                    if (PIDVal < 0) {
+                        PIDVal = -PIDVal;
+                    }
+                }
+                this->robotBase->turn(PIDVal);
+                if((int)(PIDVal) == 0) {
+                    break;
+                }
+            }
+            this->robotBase->stop();
+            // checl
+        }
+        void turnToPosPIDWithIntake(double targetPosition, double allowedError, vex::motor* intake) {
+            double actualTarget = this->gyro->getRot() + targetPosition;
+            this->odomTurningPID->setSetpoint(targetPosition);
+            this->odomMovementPID->setAllowedError(allowedError);
+            //!(this->doubleIsWithinMarginOfError(this->gyro->getRot(),targetPosition,1))
+            while (!(this->odomTurningPID->isPIDFinished())) {
+                vex::wait(10,vex::msec);
+                this->pollAndUpdateOdom();
+                intake->spin(vex::forward, 100, vex::pct);
                 double PIDVal = this->odomTurningPID->calculate(this->gyro->getHeading());
                 this->robotBase->turn(PIDVal);
                 if((int)(PIDVal) == 0) {
@@ -226,6 +271,10 @@ class Odometry {
         //     }
         // }
         void moveInFeetOdomPID(double feet) {
+            bool rev = false;
+            if (feet < 0) {
+                rev = true;
+            }
             feet = feet * this->feetMultiplier;
             double initialGyroHeader = this->gyro->getHeading();
 
@@ -253,7 +302,12 @@ class Odometry {
                 this->pollAndUpdateOdom();
                 double difference = (this->pythagoreanTheormBetweenTwoPoints(this->xPos, this->yPos, initialPosX, initialPosY));
                 movement = this->odomMovementPID->calculate(feet - difference);
-                this->robotBase->driveBothSides((int)movement);
+                if (rev) {
+                    this->robotBase->driveBothSides((int)-movement);
+                }
+                else {
+                    this->robotBase->driveBothSides((int)movement);
+                }
                 // if (!(doubleIsWithinMarginOfError(initialGyroHeader, this->gyro->getHeading(), allowedErrorDeg*2.0))) {
                 //     turnToPosPID(initialGyroHeader, allowedErrorDeg);
                 // }

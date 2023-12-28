@@ -72,7 +72,7 @@ class PID {
         return 0.0;
       }
 
-      error = absD(setpoint - process_var);
+      error = setpoint - process_var;
 
       double integral = previousIntegral + error * iterationTime;
       double derivative = (error - previousError) / iterationTime;

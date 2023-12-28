@@ -27,7 +27,7 @@ competition Competition;
 vex::brain Brain = vex::brain();
 // define your global instances of motors and other devices here
 PID odomTurningPID(0.0, 0.5, 0.0, 0.0, 100.0, -100.0, 0.1);
-PID odomMovementPID(0.0, -20, 0.0, 0.0, 100.0, -100.0, 0.1);
+PID odomMovementPID(0.0, 20, 0.0, 0.0, 100.0, -100.0, 0.1);
 vex::inertial inertialSensor(kInertialSensorPort);
 vex::motor bl(kBackLeftMotorPort);
 vex::motor cl(kCenterLeftPort);
@@ -46,7 +46,7 @@ Autons autons(&robotBase);
 Gyro gyroClass(&inertialSensor);
 vex::brain::lcd BRAINSCREEN;
 Odometry odom(kWheelDiamInches, kOdomGearRatio, &robotBase, &gyroClass, &odomTurningPID, &odomMovementPID, 1.213369);
-vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.H);
+vex::digital_out driveBaseWings = vex::digital_out(Brain.ThreeWirePort.G);
 Hang* robotHang = new Hang();
 double final = 0.0;
 double goal = 0.0;
@@ -84,16 +84,73 @@ void pre_auton(void) {
 void autonomous(void) {
   gyroClass.resetGyro();
   robotBase.resetMotorEncoders();
+
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
 
-  odom.moveInFeetOdomPID(8.0f);
-  autons.driveBackwardForSpecifiedTimeAndPercent(1.5, -0.4);
-  // odom.turnToPosPID(180.0, 2.0);
-  // odom.moveInFeetOdomPID(3.0f);
-  // odom.turnToPosPID(180.0, 0.5);
-  // odom.moveInFeetOdomPID(6.0f);
+// timing test
+
+  //  vexSkillsCataTimer->setTime(10.0, vex::sec);
+  //  while ((vexSkillsCataTimer->shouldRun())) {
+  //    catapult.moveCatapult();
+  //  }
+  //  catapult.stopMoving();
+
+// odom functions
+
+  odom.moveInFeetOdomPID(3.0f);
+  // unsigned long setTime = (vex::timer::system() + 250);
+  // while (vex::timer::system() < setTime) {
+  //   robotBase.turn(20);
+  //   odom.pollAndUpdateOdom();
+  // }
+  // while (!(gyroClass.getRot() >= 1.0) && !(gyroClass.getRot() <= 20.0)) {
+  //   robotBase.turn(40);
+  //   odom.pollAndUpdateOdom();
+  // }
+  // odom.turnToPosPIDWithIntake(35, 0.5, &intake);
+  //autons.driveForwardForSpecifiedTimeAndPercent(1.0, 0.5, &odom);
+  // odom.moveInFeetOdomPID(3.1f);
+  // intake.spin(vex::forward, 0, vex::pct);
+
+
+  //odom.moveInFeetOdomPID(-(3.1f));
+  driveBaseWings.set(true);
+
+  unsigned long time73 = vex::timer::system() + 300;
+  while(vex::timer::system() < time73) {
+    // wait 300ms
+  }
+
+  autons.driveBackwardForSpecifiedTimeAndPercent(1.01, -0.325);
+  driveBaseWings.set(false);
+
+  unsigned long time7 = vex::timer::system() + 300;
+  while(vex::timer::system() < time7) {
+    // wait 300ms
+  }
+
+  odom.turnToPosPID(320, 0.5);
+
+  unsigned long time = vex::timer::system() + 100;
+  while(vex::timer::system() < time) {
+    // wait 100ms
+  }
+
+  autons.driveBackwardForSpecifiedTimeAndPercent(1.5, -0.27);
+
+
+
+  // unsigned long time2 = (vex::timer::system() + 250);
+  // while (vex::timer::system() < time2) {
+  //   robotBase.turn(-30);
+  //   odom.pollAndUpdateOdom();
+  // }
+  // robotBase.stop();
+
+  // odom.turnToPosPID(320, 0.5);
+  // autons.driveBackwardForSpecifiedTimeAndPercent(1.07, -0.362);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -141,7 +198,6 @@ void usercontrol(void) {
     if (controllerMain.ButtonDown.pressing() && !buttonDownLastPressed) {
       driveBaseWings.set(false);
     }
-
 
     if (controllerMain.ButtonL1.pressing() && !buttonL1LastPressed) {
       intakeEnabled = !intakeEnabled;
