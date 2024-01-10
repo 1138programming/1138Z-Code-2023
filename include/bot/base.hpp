@@ -10,13 +10,24 @@ class Base {
         Motor_Group right;
     public:
         // ___ Constructor ___
+        /**
+         * @brief Creates new base and sets motors to brake (trust)
+        */
         Base(Motor_Group leftSide, Motor_Group rightSide) {
             this->left = leftSide;
             this->right = rightSide;
+            this->left.setBrakeMode(vex::brakeType::brake);
+            this->right.setBrakeMode(vex::brakeType::brake);
         }
         // ___ Useful Functions ___
         void driveBothSides(int movement) {
             this->left.move(movement);
+            this->right.move(movement);
+        }
+        void moveLeftMotors(int movement) {
+            this->left.move(movement);
+        }
+        void moveRightMotors(int movement) {
             this->right.move(movement);
         }
 
