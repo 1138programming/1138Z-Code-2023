@@ -28,14 +28,23 @@ class Movement {
             leftJoystickVertical *= splitArcadeForwardMult;
             rightJoystickHorizontal *= splitArcadeTurningMult;
 
+            // TODO: double check other vex code to make sure this is correct
             int leftControl = (int)(leftJoystickVertical + rightJoystickHorizontal);
             int rightControl = (int)(leftJoystickVertical - rightJoystickHorizontal);
             
             this->robotBase->moveLeftMotors(leftControl);
             this->robotBase->moveRightMotors(rightControl);
         }
+        // who prefers this???
         void driveSplitTank(vex::controller controller = vex::controller(vex::controllerType::primary)) {
+            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.Axis3.value());
+            float rightJoystickVertical = convertRangeToNewRange(127, 100, controller.Axis2.value());
 
+            leftJoystickVertical *= splitTankLeftMult;
+            rightJoystickVertical *= splitTankRightMult;
+
+            this->robotBase->moveLeftMotors(leftJoystickVertical);
+            this->robotBase->moveRightMotors(rightJoystickVertical);
         }
 };
 
