@@ -1,7 +1,9 @@
 #ifndef FLYWHEEL_HPP
 #define FLYWHEEL_HPP
 
-class Flywheel {
+#include "toggleable.hpp"
+
+class Flywheel : Toggleable{
     private:
         int a;
     public:
