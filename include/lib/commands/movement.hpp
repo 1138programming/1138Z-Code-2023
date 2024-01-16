@@ -9,23 +9,22 @@
 
 class Movement {
     private:
-    Controller internalController;
     float convertRangeToNewRange(int currentMaxMin, int newMaxMin, int val) {
         return ((float)val) * ((float)newMaxMin/(float)currentMaxMin);
     }
     public:
         Base* robotBase;
-        Movement(Motor_Group leftMotors, Motor_Group rightMotors) {
+        Movement(MotorGroup leftMotors, MotorGroup rightMotors) {
             this->robotBase = new Base(leftMotors, rightMotors);
         }
         Movement(Base* robotBase) {
             this->robotBase = robotBase;
         }
 
-        void driveSplitArcade(Controller controller = vex::controller(vex::controllerType::primary)) {
+        void driveSplitArcade(Controller controller = Controller(vex::controllerType::primary)) {
             // using val for slightly more accuracy
-            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.Axis3.value());
-            float rightJoystickHorizontal = convertRangeToNewRange(127, 100, controller.Axis1.value());
+            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_3));
+            float rightJoystickHorizontal = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_1));
             // not running motors at full power.
             leftJoystickVertical *= splitArcadeForwardMult;
             rightJoystickHorizontal *= splitArcadeTurningMult;
@@ -38,9 +37,9 @@ class Movement {
             this->robotBase->moveRightMotors(rightControl);
         }
         // who prefers this???
-        void driveSplitTank(vex::controller controller = vex::controller(vex::controllerType::primary)) {
-            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.Axis3.value());
-            float rightJoystickVertical = convertRangeToNewRange(127, 100, controller.Axis2.value());
+        void driveSplitTank(Controller controller = Controller(vex::controllerType::primary)) {
+            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_3));
+            float rightJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_2));
 
             leftJoystickVertical *= splitTankLeftMult;
             rightJoystickVertical *= splitTankRightMult;

@@ -30,14 +30,17 @@ class Base {
         void moveRightMotors(int movement) {
             this->right.move(movement);
         }
-
         void stop() {
             this->left.stop();
             this->right.stop();
         }
+
         void resetAllEncoders() {
             this->left.resetEncoders();
             this->right.resetEncoders();
+        }
+        double getAverageRotationBothSides() {
+            return (this->left->averageRot() + this->right->averageRot())/2.0;
         }
         
 };

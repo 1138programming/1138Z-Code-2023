@@ -4,15 +4,15 @@
 #include "vex.h"
 #include <vector>
 
-class Motor_Group {
+class MotorGroup {
     private:
         std::vector<vex::motor*> motors;
     public:
         // default contructor not reccomended
-        Motor_Group() {
+        MotorGroup() {
             this->motors = std::vector<vex::motor*>();
         }
-        Motor_Group(std::vector<vex::motor*> motors) {
+        MotorGroup(std::vector<vex::motor*> motors) {
             this->motors = motors;
         }
         // just incase user wants to do whatever they want w/ motors

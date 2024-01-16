@@ -2,8 +2,8 @@
 #define VECTOR2_HPP
 
 struct Vector2 {
-    float x;
-    float y;
+    double x;
+    double y;
 };
 
 #endif
