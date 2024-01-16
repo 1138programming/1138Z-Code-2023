@@ -5,9 +5,11 @@
 #include "motorgroup.hpp"
 #include "constants.h"
 #include "vex.h"
+#include "controller.hpp"
 
 class Movement {
     private:
+    Controller internalController;
     float convertRangeToNewRange(int currentMaxMin, int newMaxMin, int val) {
         return ((float)val) * ((float)newMaxMin/(float)currentMaxMin);
     }
@@ -20,7 +22,7 @@ class Movement {
             this->robotBase = robotBase;
         }
 
-        void driveSplitArcade(vex::controller controller = vex::controller(vex::controllerType::primary)) {
+        void driveSplitArcade(Controller controller = vex::controller(vex::controllerType::primary)) {
             // using val for slightly more accuracy
             float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.Axis3.value());
             float rightJoystickHorizontal = convertRangeToNewRange(127, 100, controller.Axis1.value());
