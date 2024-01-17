@@ -53,6 +53,8 @@ class Odometry {
         //useful funcs.
         void pollAndUpdateOdom() {
             double averagedMovementDistance = this->robotBase->getAverageRotationBothSides();
+            averagedMovementDistance = getActualPosFromWheelRot(averagedMovementDistance);
+            
         }
 };
 
