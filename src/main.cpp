@@ -8,6 +8,10 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "constants.h"
+#include "base.hpp"
+#include "gyro.hpp"
+
 
 using namespace vex;
 
@@ -15,6 +19,8 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
+Base robotBase({vex::motor(), vex::motor(), vex::motor()}, {});
+
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -70,7 +76,7 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
 
-    wait(20, msec); // Sleep the task for a short amount of time to
+    wait(5, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
 }

@@ -18,16 +18,43 @@ class Odometry {
         float gearRatio;
 
         PID* odomTurningPID;
-        PID odomMovementPID;
+        PID* odomMovementPID;
+
+        double lastOdomPos;
 
         double getActualPosFromWheelRot(double rot) {
             return rot * this->wheelDiam * this->gearRatio;
         }
+
+        double convertDegToRad(double degrees) {
+            return degrees * (PI/180.0);
+        }
+        double convertRadToDeg(double rad) {
+            return rad * (180.0/PI);
+        }
+
+        double pythagoreanThrmBetweenTwoPoints(Vector2 pos1, Vector2 pos2) {
+            double xChange = (pos1.x - pos2.x);
+            double yChange = (pos1.y - pos2.y);
+
+            double cSquared = (xChange * xChange) + (yChange * yChange);
+            return sqrt(cSquared);
+        }
+
+        double xMult(double deg) {
+            return cos(this->convertDegToRad(deg));
+        }
+        double yMult(double deg) {
+            return sin(this->convertDegToRad(deg));
+        }
     public:
-        Odometry(float wheelDiameter, Base* robotBase, Gyro* gyro) {
+        Odometry(float wheelDiameter, Base* robotBase, Gyro* gyro, PID* odomMovementPID, PID* odomTurningPID) {
             this->robotBase = robotBase;
             this->wheelDiam = wheelDiameter;
             this->gyro = gyro;
+
+            this->odomMovementPID = odomMovementPID;
+            this->odomTurningPID = odomTurningPID;
         }
 
         //getters
@@ -40,6 +67,7 @@ class Odometry {
             Vector2 getPos() {
                 return this->pos;
             }
+
         //setters
             void setX(double x) {
                 this->pos.x = x;
@@ -50,11 +78,25 @@ class Odometry {
             void setPos(Vector2 pos) {
                 this->pos = pos;
             }
+
         //useful funcs.
         void pollAndUpdateOdom() {
-            double averagedMovementDistance = this->robotBase->getAverageRotationBothSides();
+            // find averaged movement + convert to inches
+            double averagedMovementDistance = this->robotBase->getAverageRotationBothSides() - this->lastOdomPos;
             averagedMovementDistance = getActualPosFromWheelRot(averagedMovementDistance);
-            
+
+            // get heading + calculate values (in inches) from that
+            double gyroHeading = this->gyro->getHeading();
+
+            double xChange = this->xMult(gyroHeading);
+            xChange *= averagedMovementDistance;
+
+            double yChange = this->yMult(gyroHeading);
+            yChange *= averagedMovementDistance;
+
+            //--h+-+ello my name is noah bronsion
+            // set last pos to use in next update
+            this->lastOdomPos = this->robotBase->getAverageRotationBothSides();
         }
 };
 
