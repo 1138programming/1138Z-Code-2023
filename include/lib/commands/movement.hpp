@@ -1,11 +1,11 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
-#include "base.hpp"
-#include "motorgroup.hpp"
-#include "constants.h"
 #include "vex.h"
-#include "controller.hpp"
+#include "lib/bot/base.hpp"
+#include "lib/resources/motorgroup.hpp"
+#include "impl/constants.h"
+#include "lib/resources/controller.hpp"
 
 class Movement {
     private:
@@ -26,8 +26,8 @@ class Movement {
             float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_3));
             float rightJoystickHorizontal = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_1));
             // not running motors at full power.
-            leftJoystickVertical *= splitArcadeForwardMult;
-            rightJoystickHorizontal *= splitArcadeTurningMult;
+            leftJoystickVertical *= KSplitArcadeForwardMult;
+            rightJoystickHorizontal *= KSplitArcadeTurningMult;
 
             // TODO: double check other vex code to make sure this is correct
             int leftControl = (int)(leftJoystickVertical + rightJoystickHorizontal);
@@ -41,8 +41,8 @@ class Movement {
             float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_3));
             float rightJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_2));
 
-            leftJoystickVertical *= splitTankLeftMult;
-            rightJoystickVertical *= splitTankRightMult;
+            leftJoystickVertical *= KSplitTankLeftMult;
+            rightJoystickVertical *= KSplitTankRightMult;
 
             this->robotBase->moveLeftMotors(leftJoystickVertical);
             this->robotBase->moveRightMotors(rightJoystickVertical);

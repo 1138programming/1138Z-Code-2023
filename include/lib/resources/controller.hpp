@@ -35,8 +35,10 @@ class Controller {
                     return this->internalController->Axis2.position();
                 break;
                 case AXIS_3:
+                    return this->internalController->Axis3.position();
                 break;
                 case AXIS_4:
+                    return this->internalController->Axis4.position();
                 break;
                 default:
                     return -1;

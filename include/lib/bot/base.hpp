@@ -1,19 +1,19 @@
 #ifndef BASE_HPP
 #define BASE_HPP
 
-#include "motorgroup.hpp"
+#include "lib/resources/motorgroup.hpp"
 #include "vex.h"
 
 class Base {
     private:
-        Motor_Group left;
-        Motor_Group right;
+        MotorGroup left;
+        MotorGroup right;
     public:
         // ___ Constructor ___
         /**
          * @brief Creates new base and sets motors to brake (trust)
         */
-        Base(Motor_Group leftSide, Motor_Group rightSide) {
+        Base(MotorGroup leftSide, MotorGroup rightSide) {
             this->left = leftSide;
             this->right = rightSide;
             this->left.setBrakeMode(vex::brakeType::brake);
@@ -40,7 +40,7 @@ class Base {
             this->right.resetEncoders();
         }
         double getAverageRotationBothSides() {
-            return (this->left->averageRot() + this->right->averageRot())/2.0;
+            return (this->left.averageRot(vex::rotationUnits::deg) + this->right.averageRot(vex::rotationUnits::deg))/2.0;
         }
         
 };

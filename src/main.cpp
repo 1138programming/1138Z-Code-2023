@@ -8,10 +8,9 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
-#include "constants.h"
-#include "base.hpp"
-#include "gyro.hpp"
-#include "movement.hpp"
+#include "impl/constants.h"
+#include "lib/bot/gyro.hpp"
+#include "lib/commands/movement.hpp"
 
 
 using namespace vex;
@@ -21,7 +20,7 @@ competition Competition;
 
 // define your global instances of motors and other devices here
 std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort, true), new vex::motor(KMiddleLeftMotorPort, true), new vex::motor(KFrontLeftMotorPort)};
-std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort), new vex::motor(KMiddleRightMotorPort), new ex::motor(KFrontRightMotorPort, true)};
+std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort), new vex::motor(KMiddleRightMotorPort), new vex::motor(KFrontRightMotorPort, true)};
 Base robotBase(leftMotors, rightMotors);
 Movement botMovement(&robotBase);
 

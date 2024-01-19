@@ -1,7 +1,7 @@
 # VEXcode makefile 2019_03_26_01
 
 # show compiler output
-VERBOSE = 1
+VERBOSE = 0
 
 # include toolchain options
 include vex/mkenv.mk
@@ -10,6 +10,7 @@ include vex/mkenv.mk
 SRC_C  = $(wildcard src/*.cpp) 
 SRC_C += $(wildcard src/*.c)
 SRC_C += $(wildcard src/*/*.cpp) 
+SRC_C += $(wildcard src/*/*/*.cpp) 
 SRC_C += $(wildcard src/*/*.c)
 
 OBJ = $(addprefix $(BUILD)/, $(addsuffix .o, $(basename $(SRC_C))) )
