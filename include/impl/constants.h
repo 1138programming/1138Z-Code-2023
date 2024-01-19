@@ -1,10 +1,20 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-const float splitArcadeForwardMult = 0.8;
-const float splitArcadeTurningMult = 0.9;
+// driving
+const float KSplitArcadeForwardMult = 0.8;
+const float KSplitArcadeTurningMult = 0.9;
 
-const float splitTankLeftMult = 0.8;
-const float splitTankRightMult = 0.8;
+const float KSplitTankLeftMult = 0.8;
+const float KSplitTankRightMult = 0.8;
+
+// drive base
+const int KBackRightMotorPort = 0;
+const int KMiddleRightMotorPort = 1;
+const int KFrontRightMotorPort = 2; // rev
+
+const int KBackLeftMotorPort = 10; // rev
+const int KMiddleLeftMotorPort = 11; // rev
+const int KFrontLeftMotorPort = 12;
 
 #endif

@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "base.hpp"
 #include "gyro.hpp"
+#include "movement.hpp"
 
 
 using namespace vex;
@@ -19,7 +20,10 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-Base robotBase({vex::motor(), vex::motor(), vex::motor()}, {});
+std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort, true), new vex::motor(KMiddleLeftMotorPort, true), new vex::motor(KFrontLeftMotorPort)};
+std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort), new vex::motor(KMiddleRightMotorPort), new ex::motor(KFrontRightMotorPort, true)};
+Base robotBase(leftMotors, rightMotors);
+Movement botMovement(&robotBase);
 
 
 /*---------------------------------------------------------------------------*/
@@ -75,6 +79,8 @@ void usercontrol(void) {
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
+    
+    botMovement.driveSplitArcade();
 
     wait(5, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

@@ -17,7 +17,7 @@ class OdomMovement {
         }
 
         void turnToPosPID(double targetPos, double allowedError) {
-            double actualTarget = this->gyro->getRot();
+            double actualTarget = this->gyro->getRot() + targetPos;
         }
 };
 
