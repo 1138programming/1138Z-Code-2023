@@ -21,10 +21,10 @@ class Movement {
             this->robotBase = robotBase;
         }
 
-        void driveSplitArcade(Controller controller = Controller(vex::controllerType::primary)) {
+        void driveSplitArcade(Controller* controller) {
             // using val for slightly more accuracy
-            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_3));
-            float rightJoystickHorizontal = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_1));
+            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller->getAxis(AXIS_3));
+            float rightJoystickHorizontal = convertRangeToNewRange(127, 100, controller->getAxis(AXIS_1));
             // not running motors at full power.
             leftJoystickVertical *= KSplitArcadeForwardMult;
             rightJoystickHorizontal *= KSplitArcadeTurningMult;
@@ -37,9 +37,9 @@ class Movement {
             this->robotBase->moveRightMotors(rightControl);
         }
         // who prefers this???
-        void driveSplitTank(Controller controller = Controller(vex::controllerType::primary)) {
-            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_3));
-            float rightJoystickVertical = convertRangeToNewRange(127, 100, controller.getAxis(AXIS_2));
+        void driveSplitTank(Controller* controller) {
+            float leftJoystickVertical = convertRangeToNewRange(127, 100, controller->getAxis(AXIS_3));
+            float rightJoystickVertical = convertRangeToNewRange(127, 100, controller->getAxis(AXIS_2));
 
             leftJoystickVertical *= KSplitTankLeftMult;
             rightJoystickVertical *= KSplitTankRightMult;

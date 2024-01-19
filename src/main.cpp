@@ -11,6 +11,7 @@
 #include "impl/constants.h"
 #include "lib/bot/gyro.hpp"
 #include "lib/commands/movement.hpp"
+#include "lib/resources/controller.hpp"
 
 
 using namespace vex;
@@ -23,6 +24,7 @@ std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort, true), ne
 std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort), new vex::motor(KMiddleRightMotorPort), new vex::motor(KFrontRightMotorPort, true)};
 Base robotBase(leftMotors, rightMotors);
 Movement botMovement(&robotBase);
+Controller mainController(vex::controllerType::primary);
 
 
 /*---------------------------------------------------------------------------*/
@@ -79,7 +81,7 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
     
-    botMovement.driveSplitArcade();
+    botMovement.driveSplitArcade(mainController);
 
     wait(5, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

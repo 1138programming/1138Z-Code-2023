@@ -5,8 +5,8 @@
 const float KSplitArcadeForwardMult = 0.8;
 const float KSplitArcadeTurningMult = 0.9;
 
-const float KSplitTankLeftMult = 0.8;
-const float KSplitTankRightMult = 0.8;
+const float KSplitTankLeftMult = 1.0;
+const float KSplitTankRightMult = 1.0;
 
 // drive base
 const int KBackRightMotorPort = 0;
