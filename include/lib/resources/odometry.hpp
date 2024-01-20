@@ -17,9 +17,6 @@ class Odometry {
         float wheelDiam;
         float gearRatio;
 
-        PID* odomTurningPID;
-        PID* odomMovementPID;
-
         double lastOdomPos;
 
         double getActualPosFromWheelRot(double rot) {
@@ -48,13 +45,10 @@ class Odometry {
             return sin(this->convertDegToRad(deg));
         }
     public:
-        Odometry(float wheelDiameter, Base* robotBase, Gyro* gyro, PID* odomMovementPID, PID* odomTurningPID) {
+        Odometry(float wheelDiameter, Base* robotBase, Gyro* gyro) {
             this->robotBase = robotBase;
             this->wheelDiam = wheelDiameter;
             this->gyro = gyro;
-
-            this->odomMovementPID = odomMovementPID;
-            this->odomTurningPID = odomTurningPID;
         }
 
         //getters
