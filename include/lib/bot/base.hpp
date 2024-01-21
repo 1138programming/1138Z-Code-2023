@@ -8,6 +8,7 @@ class Base {
     private:
         MotorGroup left;
         MotorGroup right;
+        bool reversed;
     public:
         // ___ Constructor ___
         /**
@@ -19,6 +20,7 @@ class Base {
             this->left.setBrakeMode(vex::brakeType::brake);
             this->right.setBrakeMode(vex::brakeType::brake);
         }
+
         // ___ Useful Functions ___
         void driveBothSides(int movement) {
             this->left.move(movement);

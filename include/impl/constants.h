@@ -13,8 +13,15 @@ const int KBackRightMotorPort = 0;
 const int KMiddleRightMotorPort = 1;
 const int KFrontRightMotorPort = 2; // rev
 
-const int KBackLeftMotorPort = 10; // rev
-const int KMiddleLeftMotorPort = 11; // rev
-const int KFrontLeftMotorPort = 12;
+const int KBackLeftMotorPort = 12; 
+const int KMiddleLeftMotorPort = 13; // rev
+const int KFrontLeftMotorPort = 14; // rev
 
+// intake
+const int KIntakeMotorPort = 8;
+
+
+// odom
+const int KInertialSensorPort = 3;
+const float KOdomWheelSize = 4.125;
 #endif

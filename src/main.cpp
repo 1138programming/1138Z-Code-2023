@@ -12,6 +12,11 @@
 #include "lib/bot/gyro.hpp"
 #include "lib/commands/movement.hpp"
 #include "lib/resources/controller.hpp"
+#include "lib/resources/PID.hpp"
+#include "lib/resources/holdable.hpp"
+#include "impl/bot/intake.hpp"
+#include "impl/bot/hang.hpp"
+#include "lib/commands/odomMovement.hpp"
 
 
 using namespace vex;
@@ -20,11 +25,19 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort, true), new vex::motor(KMiddleLeftMotorPort, true), new vex::motor(KFrontLeftMotorPort)};
-std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort), new vex::motor(KMiddleRightMotorPort), new vex::motor(KFrontRightMotorPort, true)};
+std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort), new vex::motor(KMiddleLeftMotorPort, true), new vex::motor(KFrontLeftMotorPort, true)};
+std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort, true), new vex::motor(KMiddleRightMotorPort), new vex::motor(KFrontRightMotorPort)};
 Base robotBase(leftMotors, rightMotors);
-Movement botMovement(&robotBase);
+PID turningPID(0.0, 0.58, 0.0, 0.0, 100, -100, 0.4);
+PID movementPID(0.0, 20.0, 0.0, 0.0, 100, -100, 0.1);
+Movement botMovement(&robotBase, true);
 Controller mainController(vex::controllerType::primary);
+vex::motor intakeMotor(KIntakeMotorPort);
+Hang botHangPneumatics;
+vex::inertial* internalGyro = new vex::inertial(KInertialSensorPort);
+Gyro* botGyro = new Gyro(internalGyro);
+Odometry* botOdom = new Odometry(KOdomWheelSize, &robotBase, botGyro);
+OdomMovement* gamer = new OdomMovement(botOdom, &botMovement, botGyro, &movementPID, &turningPID);
 
 
 /*---------------------------------------------------------------------------*/
@@ -54,6 +67,11 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+  botGyro->resetGyroWithWait();
+
+  gamer->moveInInchesOdomPID(5.0);
+  gamer->turnToPosPID(180.0, 0.5);
+
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
@@ -81,7 +99,18 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
     
-    botMovement.driveSplitArcade(mainController);
+      botMovement.driveSplitArcade(&mainController);
+      botHangPneumatics.update(mainController.getButton(BUTTON_B));
+
+      if (mainController.getButton(BUTTON_R1)) {
+        intakeMotor.spin(vex::forward, 80, vex::pct);
+      }
+      else if (mainController.getButton(BUTTON_R2)) {
+        intakeMotor.spin(vex::forward, -80, vex::pct);
+      }
+      else {
+        intakeMotor.spin(vex::forward, 0, vex::pct);
+      }
 
     wait(5, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

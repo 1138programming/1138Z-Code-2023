@@ -9,9 +9,10 @@
 
 class Movement {
     private:
-    float convertRangeToNewRange(int currentMaxMin, int newMaxMin, int val) {
-        return ((float)val) * ((float)newMaxMin/(float)currentMaxMin);
-    }
+        bool reversed;
+        float convertRangeToNewRange(int currentMaxMin, int newMaxMin, int val) {
+            return ((float)val) * ((float)newMaxMin/(float)currentMaxMin);
+        }
     public:
         Base* robotBase;
         Movement(MotorGroup leftMotors, MotorGroup rightMotors) {
@@ -20,7 +21,19 @@ class Movement {
         Movement(Base* robotBase) {
             this->robotBase = robotBase;
         }
+        Movement(MotorGroup leftMotors, MotorGroup rightMotors, bool reversed) {
+            this->robotBase = new Base(leftMotors, rightMotors);
+            this->reversed = reversed;
+        }
+        Movement(Base* robotBase, bool reversed) {
+            this->robotBase = robotBase;
+            this->reversed = reversed;
+        }
 
+        void turn(double turnVal) {
+            this->robotBase->moveLeftMotors(-turnVal);
+            this->robotBase->moveRightMotors(turnVal);
+        }
         void driveSplitArcade(Controller* controller) {
             // using val for slightly more accuracy
             float leftJoystickVertical = convertRangeToNewRange(127, 100, controller->getAxis(AXIS_3));
@@ -28,6 +41,9 @@ class Movement {
             // not running motors at full power.
             leftJoystickVertical *= KSplitArcadeForwardMult;
             rightJoystickHorizontal *= KSplitArcadeTurningMult;
+            if (this->reversed) {
+                leftJoystickVertical *= -1;
+            }
 
             // TODO: double check other vex code to make sure this is correct
             int leftControl = (int)(leftJoystickVertical + rightJoystickHorizontal);

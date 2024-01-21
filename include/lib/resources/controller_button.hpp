@@ -1,7 +1,7 @@
-#ifndef CONTROLLERBUTTONS_HPP
-#define CONTROLLERBUTTONS_HPP
+#ifndef CONTROLLERBUTTON_HPP
+#define CONTROLLERBUTTON_HPP
 
-enum ControllerButtons {
+enum ControllerButton {
     DPAD_UP,
     DPAD_DOWN,
     DPAD_LEFT,

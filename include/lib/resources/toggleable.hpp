@@ -2,11 +2,10 @@
 #define TOGGLEABLE_HPP
 
 class Toggleable {
-    private:
-        bool pressed;
-        bool lastPressed;
     protected:
         bool enabled;
+        bool pressed;
+        bool lastPressed;
     public:
         void setEnabled() {
             this->enabled = true;
@@ -18,13 +17,14 @@ class Toggleable {
             this->enabled = !(this->enabled);
         }
 
-        void update(bool updateVal) {
-            this->lastPressed = this->pressed;
-            this-> pressed = updateVal;
-            if (this->isPressed()) {
-                this->toggle();
-            }
-        }
+        // TODO: need????
+        // void update(bool updateVal) {
+        //     this->lastPressed = this->pressed;
+        //     this-> pressed = updateVal;
+        //     if (this->isPressed()) {
+        //         this->toggle();
+        //     }
+        // }
 
         bool isPressed() {
             return (this->lastPressed == false && this->pressed == true);

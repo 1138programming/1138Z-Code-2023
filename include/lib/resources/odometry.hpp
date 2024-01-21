@@ -2,8 +2,8 @@
 #define ODOMETRY_HPP
 
 #include "vector2.hpp"
-#include "gyro.hpp"
-#include "base.hpp"
+#include "lib/bot/gyro.hpp"
+#include "lib/bot/base.hpp"
 #include "PID.hpp"
 
 #define PI 3.14159265358979343846
@@ -19,9 +19,7 @@ class Odometry {
 
         double lastOdomPos;
 
-        double getActualPosFromWheelRot(double rot) {
-            return rot * this->wheelDiam * this->gearRatio;
-        }
+
 
         double convertDegToRad(double degrees) {
             return degrees * (PI/180.0);
@@ -30,25 +28,16 @@ class Odometry {
             return rad * (180.0/PI);
         }
 
-        double pythagoreanThrmBetweenTwoPoints(Vector2 pos1, Vector2 pos2) {
-            double xChange = (pos1.x - pos2.x);
-            double yChange = (pos1.y - pos2.y);
 
-            double cSquared = (xChange * xChange) + (yChange * yChange);
-            return sqrt(cSquared);
-        }
 
-        double xMult(double deg) {
-            return cos(this->convertDegToRad(deg));
-        }
-        double yMult(double deg) {
-            return sin(this->convertDegToRad(deg));
-        }
+
     public:
         Odometry(float wheelDiameter, Base* robotBase, Gyro* gyro) {
             this->robotBase = robotBase;
             this->wheelDiam = wheelDiameter;
             this->gyro = gyro;
+            // reset odom pos, motor encoders are absolute....
+            this->robotBase->resetAllEncoders();
         }
 
         //getters
@@ -91,6 +80,23 @@ class Odometry {
             //--h+-+ello my name is noah bronsion
             // set last pos to use in next update
             this->lastOdomPos = this->robotBase->getAverageRotationBothSides();
+        }
+        double getActualPosFromWheelRot(double rot) {
+            return rot * this->wheelDiam * this->gearRatio;
+        }
+
+         double xMult(double deg) {
+            return cos(this->convertDegToRad(deg));
+        }
+        double yMult(double deg) {
+            return sin(this->convertDegToRad(deg));
+        }
+        double pythagoreanThrmBetweenTwoPoints(Vector2 pos1, Vector2 pos2) {
+            double xChange = (pos1.x - pos2.x);
+            double yChange = (pos1.y - pos2.y);
+
+            double cSquared = (xChange * xChange) + (yChange * yChange);
+            return sqrt(cSquared);
         }
 };
 

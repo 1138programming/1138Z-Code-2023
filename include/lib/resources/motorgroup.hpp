@@ -25,7 +25,7 @@ class MotorGroup {
 
         // ____ useful functions ____
         void resetEncoders() {
-            for (int i = 0; this->motors.size(); i++) {
+            for (int i = 0; i < this->motors.size(); i++) {
                 this->motors.at(i)->resetPosition();
             }
         }
