@@ -25,12 +25,12 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort), new vex::motor(KMiddleLeftMotorPort, true), new vex::motor(KFrontLeftMotorPort, true)};
-std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort, true), new vex::motor(KMiddleRightMotorPort), new vex::motor(KFrontRightMotorPort)};
+std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort), new vex::motor(KMiddleLeftMotorPort), new vex::motor(KFrontLeftMotorPort)};
+std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort, true), new vex::motor(KMiddleRightMotorPort, true), new vex::motor(KFrontRightMotorPort, true)};
 Base robotBase(leftMotors, rightMotors);
 PID turningPID(0.0, 0.58, 0.0, 0.0, 100, -100, 0.4);
 PID movementPID(0.0, 20.0, 0.0, 0.0, 100, -100, 0.1);
-Movement botMovement(&robotBase, true);
+Movement botMovement(&robotBase, true, true);
 Controller mainController(vex::controllerType::primary);
 vex::motor intakeMotor(KIntakeMotorPort);
 Hang botHangPneumatics;
