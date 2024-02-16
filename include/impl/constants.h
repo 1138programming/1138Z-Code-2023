@@ -3,7 +3,7 @@
 
 // driving
 const float KSplitArcadeForwardMult = 1.0;
-const float KSplitArcadeTurningMult = 0.8;
+const float KSplitArcadeTurningMult = 0.6;
 
 const float KSplitTankLeftMult = 1.0;
 const float KSplitTankRightMult = 1.0;
