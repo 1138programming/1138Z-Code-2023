@@ -42,7 +42,7 @@ class Base {
             this->right.resetEncoders();
         }
         double getAverageRotationBothSides() {
-            return (this->left.averageRot(vex::rotationUnits::deg) + this->right.averageRot(vex::rotationUnits::deg))/2.0;
+            return ((this->left.averageRot(vex::rotationUnits::deg) + this->right.averageRot(vex::rotationUnits::deg))/2.0)/360.0;
         }
         
 };

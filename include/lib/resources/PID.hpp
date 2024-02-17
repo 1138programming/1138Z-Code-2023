@@ -30,7 +30,6 @@ class PID {
 
         std::uint32_t iterationTime = 0;
         std::uint32_t lastMillis = 1;
-
         bool doubleIsWithinMarginOfError(double num, double target, double margin) {
             double min = target - (margin / 2.0);
             double max = target + (margin / 2.0);

@@ -14,8 +14,8 @@ class Odometry {
         Base* robotBase;
 
         Vector2 pos;
-        float wheelDiam;
-        float gearRatio;
+        float wheelDiam = 1.0;
+        float gearRatio = 0.125; //36::48
 
         double lastOdomPos;
 
@@ -32,6 +32,12 @@ class Odometry {
 
 
     public:
+        bool doubleIsWithinMarginOfError(double num, double target, double margin) {
+            double min = target - (margin / 2.0);
+            double max = target + (margin / 2.0);
+            return (num >= min && num <= max);
+        }
+
         Odometry(float wheelDiameter, Base* robotBase, Gyro* gyro) {
             this->robotBase = robotBase;
             this->wheelDiam = wheelDiameter;
@@ -79,6 +85,8 @@ class Odometry {
 
             //--h+-+ello my name is noah bronsion
             // set last pos to use in next update
+            this->pos.x += xChange;
+            this->pos.y += yChange;
             this->lastOdomPos = this->robotBase->getAverageRotationBothSides();
         }
         double getActualPosFromWheelRot(double rot) {
@@ -97,6 +105,35 @@ class Odometry {
 
             double cSquared = (xChange * xChange) + (yChange * yChange);
             return sqrt(cSquared);
+        }
+        
+        double signedPythagoreanThrmBetweenTwoPoints(Vector2 currentPos, Vector2 initialPos, Vector2 initialRiseOverRun, Vector2 targetPos, double margin) {
+            // calculating sign
+            // ignore if too close to 0...
+            bool xDiff;
+            bool yDiff;
+            if (!doubleIsWithinMarginOfError(initialRiseOverRun.x, 0, margin)) {
+                double newRun = (initialPos.x - currentPos.x);
+                xDiff = ((newRun < 0) != (initialRiseOverRun.x < 0));
+            }
+            else {
+                xDiff = true;
+            }
+            if (!doubleIsWithinMarginOfError(initialRiseOverRun.y, 0, margin)) {
+                double newRise = (initialPos.y - currentPos.y);
+                yDiff = ((newRise < 0) != (initialRiseOverRun.y < 0));
+            }
+            else {
+                yDiff = true;
+            }
+            
+            // calculating pythag. thrm.
+            double xChange = (initialPos.x - currentPos.x);
+            double yChange = (initialPos.y - currentPos.y);
+
+            double cSquared = (xChange * xChange) + (yChange * yChange);
+
+            return (yDiff && xDiff) ? -sqrt(cSquared) : sqrt(cSquared);
         }
 };
 

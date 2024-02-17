@@ -20,8 +20,21 @@ class OdomMovement {
         }
 
         double getDistBetweenDeg(double botDeg, double targetDeg) {
-            // quite unreadable, but: https://stackoverflow.com/questions/9505862/shortest-distance-between-two-degree-marks-on-a-circle
-            return ((botDeg - targetDeg) > 180 ? -360 + (botDeg - targetDeg) : (botDeg - targetDeg));
+            // but: https://stackoverflow.com/questions/9505862/shortest-distance-between-two-degree-marks-on-a-circle
+            float diff, sweepAngle;
+
+            diff = botDeg - targetDeg;
+
+            if (diff < -180) {
+                sweepAngle = -(360+diff);
+            }
+            else if (diff > 180) {
+                sweepAngle = 360-diff;
+            }
+            else {
+                sweepAngle = -diff;
+            }
+            return sweepAngle;
         }
     public:
         OdomMovement(Odometry* odom, Movement* robotMovement, Gyro* gyro, PID* odomMovementPID, PID* odomTurningPID) {
@@ -34,11 +47,16 @@ class OdomMovement {
         }
 
         void turnToPosPID(double targetPos, double allowedError) {
+            vex::controller cont(vex::controllerType::primary);
             // make 0s            
             this->odomTurningPID->setSetpoint(0.0);
             this->odomTurningPID->setAllowedError(allowedError);
 
             while(this->odomTurningPID->isPidFinished() == false) {
+                cont.Screen.clearLine(0);
+                cont.Screen.setCursor(0,0);
+                cont.Screen.print("%f, %f", getDistBetweenDeg(this->gyro->getHeading(), targetPos), this->gyro->getHeading());
+
                 this->odom->pollAndUpdateOdom();
                 double PIDVal = this->odomTurningPID->calculate(getDistBetweenDeg(this->gyro->getHeading(), targetPos));
                 this->robotMovement->turn(PIDVal);
@@ -63,20 +81,16 @@ class OdomMovement {
             double initialPosX = this->odom->getX();
             double initialPosY = this->odom->getY();
 
+            Vector2 initialRiseOverRun = (Vector2){posToMoveToY-initialPosY,posToMoveToX-initialPosX};
+
             double initialDisplacement = this->odom->pythagoreanThrmBetweenTwoPoints((Vector2){initialPosX, initialPosY}, (Vector2){posToMoveToX, posToMoveToY});
             double movement = 20;
 
             this->odomMovementPID->setSetpoint(0.0);
-            if (inches < 0) {
-                this->robotMovement->robotBase->driveBothSides(movement);
-            }
-            else {
-                this->robotMovement->robotBase->driveBothSides(-movement);
-            }
             do {
                 vex::wait(5, vex::msec);
                 this->odom->pollAndUpdateOdom();
-                double difference = (this->odom->pythagoreanThrmBetweenTwoPoints((Vector2) {this->odom->getX(), this->odom->getY()}, (Vector2) {initialPosX, initialPosY}));
+                double difference = (this->odom->signedPythagoreanThrmBetweenTwoPoints((Vector2) {this->odom->getX(), this->odom->getY()}, (Vector2) {initialPosX, initialPosY}, initialRiseOverRun, (Vector2){posToMoveToX, posToMoveToY}, 0.1));
                 movement = this->odomMovementPID->calculate(inches - difference);
                 if (rev) {
                     this->robotMovement->robotBase->driveBothSides((int)-movement);
@@ -86,6 +100,46 @@ class OdomMovement {
                 }
             }
             while (this->odomMovementPID->isPidFinished() == false);
+        }
+        void fixed(double inches) {
+            inches *= 0.0221;
+            bool negative = false;
+            if (inches < 0) {
+                negative = true;
+            }
+            // get vector2s
+            this->odom->pollAndUpdateOdom();
+            Vector2 initialPos = (Vector2) {this->odom->getX(), this->odom->getY()};
+            // set up PID
+            this->odomMovementPID->setSetpoint(0.0);
+            this->odomMovementPID->setAllowedError(0.02);
+
+            vex::controller cont(vex::controllerType::primary);
+
+            do {
+                // controller stuff
+                cont.Screen.clearLine(0);
+                vex::wait(5, vex::msec);
+                cont.Screen.setCursor(0,0);
+                cont.Screen.print("%f, %f", this->odom->getX(), this->odom->getY());
+
+                this->odom->pollAndUpdateOdom();
+
+                Vector2 currentPos = this->odom->getPos();
+                
+                double dif = this->odom->pythagoreanThrmBetweenTwoPoints(initialPos, currentPos);
+                double movement;
+                if (negative) {
+                    movement = this->odomMovementPID->calculate(inches + dif);
+                }
+                else {
+                    movement = this->odomMovementPID->calculate(inches - dif);
+                }
+                this->robotMovement->robotBase->driveBothSides(movement);
+
+            } while(this->odomMovementPID->isPidFinished() == false);
+
+
         }
 };
 

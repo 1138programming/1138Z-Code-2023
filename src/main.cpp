@@ -28,8 +28,8 @@ competition Competition;
 std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort), new vex::motor(KMiddleLeftMotorPort), new vex::motor(KFrontLeftMotorPort)};
 std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort, true), new vex::motor(KMiddleRightMotorPort, true), new vex::motor(KFrontRightMotorPort, true)};
 Base robotBase(leftMotors, rightMotors);
-PID turningPID(0.0, 0.58, 0.0, 0.0, 100, -100, 0.4);
-PID movementPID(0.0, 20.0, 0.0, 0.0, 100, -100, 0.1);
+PID turningPID(0.0, -0.3, 0.0, 0.0, 100, -100, 0.4);
+PID movementPID(0.0, 200, 0.0, 0.0, 100, -100, 0.1);
 Movement botMovement(&robotBase, true, true);
 Controller mainController(vex::controllerType::primary);
 vex::motor intakeMotor(KIntakeMotorPort);
@@ -67,10 +67,14 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+  robotBase.resetAllEncoders();
   botGyro->resetGyroWithWait();
 
-  gamer->moveInInchesOdomPID(5.0);
-  gamer->turnToPosPID(180.0, 0.5);
+  //this code sucks kys - bronson
+  gamer->fixed(40.0);
+  vex::wait(50, vex::msec);
+  gamer->fixed(-10.0);
+  gamer->turnToPosPID(180.0, 0.1);
 
   // ..........................................................................
   // Insert autonomous user code here.
