@@ -29,7 +29,7 @@ std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort), new vex:
 std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort, true), new vex::motor(KMiddleRightMotorPort, true), new vex::motor(KFrontRightMotorPort, true)};
 Base robotBase(leftMotors, rightMotors);
 PID turningPID(0.0, -0.3, 0.0, 0.0, 100, -100, 0.4);
-PID movementPID(0.0, 200, 0.0, 0.0, 100, -100, 0.1);
+PID movementPID(0.0, 250, 0.0, 0.0, 100, -100, 0.1);
 Movement botMovement(&robotBase, true, true);
 Controller mainController(vex::controllerType::primary);
 vex::motor intakeMotor(KIntakeMotorPort);
@@ -67,14 +67,82 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
+  uint32_t setTime;
+
   robotBase.resetAllEncoders();
-  botGyro->resetGyroWithWait();
+  botGyro->resetGyro();
 
   //this code sucks kys - bronson
-  gamer->fixed(40.0);
-  vex::wait(50, vex::msec);
+
+  // move 24 in
+  gamer->fixed(24.0);
+
+  // spin intake for 500ms
+  setTime = vex::timer::system() + 500;
+  while (vex::timer::system() <= setTime) {
+    intakeMotor.spin(vex::forward, -80, vex::pct);
+  }
+  intakeMotor.spin(vex::forward, 0, vex::pct);
+
+  while(!botGyro->isResetFinished()) {
+    // do nothing
+    vex::wait(5, vex::msec);
+  }
+
+  //move back, spin, then move more forward (don't get hit on thing)
   gamer->fixed(-10.0);
-  gamer->turnToPosPID(180.0, 0.1);
+      // force turn left
+      // setTime = vex::timer::system() + 60;
+      // while (vex::timer::system() < setTime) {
+      //   botMovement.turn(100);
+      // }
+  gamer->turnToPosPID(180.0, 7.0);
+  gamer->fixed(17.0);
+
+  // turn and go forward into goal (multiple steps)
+    gamer->turnToPosPID(210.0, 7.0);
+    gamer->fixed(24.0);
+    gamer->turnToPosPID(270, 7.0);
+    // spin outtake before we go into goal... (and go in)
+      intakeMotor.spin(vex::forward, 80, vex::pct);
+      gamer->fixed(17.0);
+      intakeMotor.spin(vex::forward, 0, vex::pct);
+    // leave goal and turn to triballs
+    gamer->fixed(-8.0);
+    gamer->turnToPosPID(348, 7.0);
+    gamer->fixed(46.0);
+    // turn back to goal and outtake
+    gamer->turnToPosPID(200, 7.0);
+    setTime = vex::timer::system() + 400;
+    while (vex::timer::system() < setTime) {
+      intakeMotor.spin(vex::forward, 80, vex::pct);
+    }
+    intakeMotor.spin(vex::forward, 0, vex::pct);
+
+    // turn to next ball and go to it
+    gamer->turnToPosPID(240, 7.0);
+    gamer->fixed(20.0);
+
+    //intake next triball
+    setTime = vex::timer::system() + 500;
+    while (vex::timer::system() < setTime) {
+      intakeMotor.spin(vex::forward, -80, vex::pct);
+    }
+    intakeMotor.spin(vex::forward, 0, vex::pct);
+
+    // turn to goal
+      gamer->turnToPosPID(180.0, 7.0);
+    // sex
+      gamer->fixed(30.0);
+      while(true) {
+        gamer->fixed(-10.0);
+        vex::wait(50, vex::msec);
+        gamer->fixed(10.0);
+        vex::wait(50, vex::msec);
+      }
+
+
+  // gamer->turnToPosPID(90.0, 0.1);
 
   // ..........................................................................
   // Insert autonomous user code here.

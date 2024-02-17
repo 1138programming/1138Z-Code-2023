@@ -30,13 +30,23 @@ class Gyro {
          * @brief gets the rotation of the current sensor (value from -infinity -> infinity)
          */
         double getRot() {
-            return this->gyro->rotation();
+            if (!this->gyro->isCalibrating()) {
+                return this->gyro->rotation();
+            }
+            else {
+                return 0.0;
+            }
         }
         /**
          * @brief gets the rotation of the current sensor locked to 360deg (value from 0.0 -> 360.0)
         */
         double getHeading() {
-            return this->gyro->heading();
+            if (!this->gyro->isCalibrating()) {
+                return this->gyro->heading();
+            }
+            else {
+                return 0.0;
+            }
         }
 };
 
