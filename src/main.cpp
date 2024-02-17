@@ -28,8 +28,8 @@ competition Competition;
 std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort), new vex::motor(KMiddleLeftMotorPort), new vex::motor(KFrontLeftMotorPort)};
 std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort, true), new vex::motor(KMiddleRightMotorPort, true), new vex::motor(KFrontRightMotorPort, true)};
 Base robotBase(leftMotors, rightMotors);
-PID turningPID(0.0, -0.3, 0.0, 0.0, 100, -100, 0.4);
-PID movementPID(0.0, 250, 0.0, 0.0, 100, -100, 0.1);
+PID turningPID(0.0, -0.27, 0.0, 0.0, 100, -100, 0.4);
+PID movementPID(0.0, 275, 0.0, 0.0, 100, -100, 0.1);
 Movement botMovement(&robotBase, true, true);
 Controller mainController(vex::controllerType::primary);
 vex::motor intakeMotor(KIntakeMotorPort);
@@ -75,12 +75,12 @@ void autonomous(void) {
   //this code sucks kys - bronson
 
   // move 24 in
-  gamer->fixed(24.0);
+  gamer->fixed(18.0);
 
   // spin intake for 500ms
   setTime = vex::timer::system() + 500;
   while (vex::timer::system() <= setTime) {
-    intakeMotor.spin(vex::forward, -80, vex::pct);
+    intakeMotor.spin(vex::forward, -100, vex::pct);
   }
   intakeMotor.spin(vex::forward, 0, vex::pct);
 
@@ -96,23 +96,30 @@ void autonomous(void) {
       // while (vex::timer::system() < setTime) {
       //   botMovement.turn(100);
       // }
-  gamer->turnToPosPID(180.0, 7.0);
-  gamer->fixed(17.0);
+  gamer->turnToPosPID(180.0, 8.0);
+  gamer->fixed(18.0);
 
   // turn and go forward into goal (multiple steps)
-    gamer->turnToPosPID(210.0, 7.0);
-    gamer->fixed(24.0);
-    gamer->turnToPosPID(270, 7.0);
+    gamer->turnToPosPID(140.0, 8.0);
+    gamer->fixed(28.0);
+    gamer->turnToPosPID(90, 8.0);
     // spin outtake before we go into goal... (and go in)
-      intakeMotor.spin(vex::forward, 80, vex::pct);
-      gamer->fixed(17.0);
-      intakeMotor.spin(vex::forward, 0, vex::pct);
+      intakeMotor.spin(vex::forward, 100, vex::pct);
+      setTime = vex::timer::system() + 200;
+      while (vex::timer::system() < setTime) {
+        vex::wait(5, vex::msec);
+      }
+      gamer->fixed(14.0);
     // leave goal and turn to triballs
-    gamer->fixed(-8.0);
-    gamer->turnToPosPID(348, 7.0);
+    gamer->fixed(-14.0);
+      intakeMotor.spin(vex::forward, 0, vex::pct);
+
+    intakeMotor.spin(vex::forward, -100, vex::pct);
+    gamer->turnToPosPID(28.0, 8.0);
     gamer->fixed(46.0);
+    intakeMotor.spin(vex::forward, 0, vex::pct);
     // turn back to goal and outtake
-    gamer->turnToPosPID(200, 7.0);
+    gamer->turnToPosPID(160.0, 8.0);
     setTime = vex::timer::system() + 400;
     while (vex::timer::system() < setTime) {
       intakeMotor.spin(vex::forward, 80, vex::pct);
@@ -120,7 +127,7 @@ void autonomous(void) {
     intakeMotor.spin(vex::forward, 0, vex::pct);
 
     // turn to next ball and go to it
-    gamer->turnToPosPID(240, 7.0);
+    gamer->turnToPosPID(55.0, 8.0);
     gamer->fixed(20.0);
 
     //intake next triball
@@ -131,7 +138,7 @@ void autonomous(void) {
     intakeMotor.spin(vex::forward, 0, vex::pct);
 
     // turn to goal
-      gamer->turnToPosPID(180.0, 7.0);
+      gamer->turnToPosPID(180.0, 8.0);
     // sex
       gamer->fixed(30.0);
       while(true) {
@@ -175,10 +182,10 @@ void usercontrol(void) {
       botHangPneumatics.update(mainController.getButton(BUTTON_B));
 
       if (mainController.getButton(BUTTON_R1)) {
-        intakeMotor.spin(vex::forward, 80, vex::pct);
+        intakeMotor.spin(vex::forward, 100, vex::pct);
       }
       else if (mainController.getButton(BUTTON_R2)) {
-        intakeMotor.spin(vex::forward, -80, vex::pct);
+        intakeMotor.spin(vex::forward, -100, vex::pct);
       }
       else {
         intakeMotor.spin(vex::forward, 0, vex::pct);
