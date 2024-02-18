@@ -22,6 +22,6 @@ const int KIntakeMotorPort = 8;
 
 
 // odom
-const int KInertialSensorPort = 6;
+const int KInertialSensorPort = 5;
 const float KOdomWheelSize = 4.125;
 #endif
