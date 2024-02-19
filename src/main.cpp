@@ -17,6 +17,10 @@
 #include "impl/bot/intake.hpp"
 #include "impl/bot/hang.hpp"
 #include "lib/commands/odomMovement.hpp"
+#include "impl/bot/display.hpp"
+#include <iostream>
+#include <fstream>
+#include <string>
 
 
 using namespace vex;
@@ -25,19 +29,8 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
-std::vector<vex::motor*> leftMotors{new vex::motor(KBackLeftMotorPort), new vex::motor(KMiddleLeftMotorPort), new vex::motor(KFrontLeftMotorPort)};
-std::vector<vex::motor*> rightMotors{new vex::motor(KBackRightMotorPort, true), new vex::motor(KMiddleRightMotorPort, true), new vex::motor(KFrontRightMotorPort, true)};
-Base robotBase(leftMotors, rightMotors);
-PID turningPID(0.0, -0.25, 0.0, 0.0, 100, -100, 0.4);
-PID movementPID(0.0, 275, 0.0, 0.0, 100, -100, 0.1);
-Movement botMovement(&robotBase, true, true);
-Controller mainController(vex::controllerType::primary);
-vex::motor intakeMotor(KIntakeMotorPort);
-Hang botHangPneumatics;
-vex::inertial* internalGyro = new vex::inertial(KInertialSensorPort);
-Gyro* botGyro = new Gyro(internalGyro);
-Odometry* botOdom = new Odometry(KOdomWheelSize, &robotBase, botGyro);
-OdomMovement* gamer = new OdomMovement(botOdom, &botMovement, botGyro, &movementPID, &turningPID);
+vex::brain botBrain;
+Display botDisplay(&botBrain);
 
 
 /*---------------------------------------------------------------------------*/
@@ -67,74 +60,6 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  uint32_t setTime;
-
-  robotBase.resetAllEncoders();
-  botGyro->resetGyro();
-
-  //this code sucks kys - bronson
-
-  // move forward + intake
-  intakeMotor.spin(vex::forward, -100, vex::pct);
-  gamer->fixed(18.0);
-
-  // spin intake for 500ms
-  setTime = vex::timer::system() + 500;
-  while (vex::timer::system() <= setTime) {
-    vex::wait(5, vex::msec);
-  }
-  intakeMotor.spin(vex::forward, 0, vex::pct);
-
-  while(!botGyro->isResetFinished()) {
-    // do nothing
-    vex::wait(5, vex::msec);
-  }
-
-  //move back, spin, then move more forward (don't get hit on thing)
-  gamer->fixed(-10.0);
-      // force turn left
-      // setTime = vex::timer::system() + 60;
-      // while (vex::timer::system() < setTime) {
-      //   botMovement.turn(100);
-      // }
-  gamer->turnToPosPID(180.0, 8.0);
-  gamer->fixed(18.0);
-
-  // turn and go forward into goal (multiple steps)
-    gamer->turnToPosPID(140.0, 8.0);
-    gamer->fixed(26.0);
-    gamer->turnToPosPID(90, 8.0);
-    // spin outtake before we go into goal... (and go in)
-      intakeMotor.spin(vex::forward, 100, vex::pct);
-      setTime = vex::timer::system() + 200;
-      while (vex::timer::system() < setTime) {
-        vex::wait(5, vex::msec);
-      }
-      gamer->fixed(12.0);
-    // leave goal and turn to triballs
-    gamer->fixed(-22.0);
-    intakeMotor.spin(vex::forward, -100, vex::pct);
-    gamer->turnToPosPID(33.0, 8.0);
-    gamer->fixed(46.0);
-    intakeMotor.spin(vex::forward, 0, vex::pct);
-    // turn back to goal and outtake
-    gamer->turnToPosPID(160.0, 8.0);
-    intakeMotor.spin(vex::forward, 100, vex::pct);
-    gamer->fixed(30.0);
-    // turn to goal
-    // sex
-      gamer->fixed(30.0);
-      intakeMotor.spin(vex::forward, 0, vex::pct);
-      while(true) {
-        gamer->fixed(-10.0);
-        vex::wait(50, vex::msec);
-        gamer->fixed(10.0);
-        vex::wait(50, vex::msec);
-      }
-
-
-  // gamer->turnToPosPID(90.0, 0.1);
-
   // ..........................................................................
   // Insert autonomous user code here.
   // ..........................................................................
@@ -151,6 +76,17 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
+  botDisplay.clear(RED);
+  botDisplay.update();
+  //vex::color red(255, 0, 0);
+  //botBrain.Screen.clearScreen(red);
+  // if (!botDisplay.isValid()) {
+  //   std::cout << "idk lol" << std::endl;
+  // }
+  // vex::color red(255, 0, 0);
+  // botDisplay.clear(red);
+  // botDisplay.update();
+  // botDisplay.red();
   // User control code here, inside the loop
   while (1) {
     // This is the main execution loop for the user control program.
@@ -162,18 +98,7 @@ void usercontrol(void) {
     // update your motors, etc.
     // ........................................................................
     
-      botMovement.driveSplitArcade(&mainController);
-      botHangPneumatics.update(mainController.getButton(BUTTON_B));
 
-      if (mainController.getButton(BUTTON_R1)) {
-        intakeMotor.spin(vex::forward, 100, vex::pct);
-      }
-      else if (mainController.getButton(BUTTON_R2)) {
-        intakeMotor.spin(vex::forward, -100, vex::pct);
-      }
-      else {
-        intakeMotor.spin(vex::forward, 0, vex::pct);
-      }
 
     wait(5, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
